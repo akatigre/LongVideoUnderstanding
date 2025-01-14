@@ -1,0 +1,4 @@
+.vscode/**
+MInference/**
+**/dataset/**
+**/answers_*.json
