@@ -2,3 +2,5 @@
 MInference/**
 **/dataset/**
 **/answers_*.json
+**/__pycache__/*
+**/lvb_answers/*

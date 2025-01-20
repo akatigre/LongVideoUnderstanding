@@ -1,17 +1,8 @@
-import json
+import os
 import re
+import json
 import random
-from tqdm import tqdm
 from pathlib import Path
-from run import *
-
-
-def prepare_model(args):
-    #! Load Model, Tokenizer, Video processor
-    model_path = "lmms-lab/LongVA-7B-DPO" # you can also set the device map to auto to accomodate more frames
-    model, tokenizer, image_processor = load_model(model_path, device_map= "auto")
-    return model, tokenizer, image_processor
-
 
 def timestamp_to_seconds(timestamp):
     h, m, s = timestamp.split(":")
@@ -83,22 +74,11 @@ def compute_frame_timestamps(duration, max_num_frames=16):
         return [i for i in range(int(duration))]
 
 
-def longvideobench_doc_to_text(meta, max_num_frames, data_path, subtitle=True):
+def longvideobench_doc_to_text(meta, max_num_frames, data_path, subtitle=True, system_prompt=None):
     candidates = meta["candidates"]
     
     pre_prompt = ""
     post_prompt = "Answer with the option's letter from the given choices directly.\n"
-    system_prompt = lambda x: f"""
-        <|im_start|>
-        system\n
-        You are a helpful assistant.
-        <|im_end|>\n
-        <|im_start|>user\n
-        <image>\n 
-        {x} <|im_end|>\n
-        <|im_start|>assistant\n
-        """
-
     if subtitle:
         subtitle_path = Path(data_path) / "subtitles" / meta["subtitle_path"]
         with open(subtitle_path, "r") as f:
@@ -117,24 +97,6 @@ def longvideobench_doc_to_text(meta, max_num_frames, data_path, subtitle=True):
         question = meta["question_wo_referring_query"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
         return system_prompt(f'{pre_prompt}\n{question}\n{post_prompt}')
  
-def evaluate_multiple(model, tokenizer, image_processor, metadata, max_frames_num, json_name):
-    
-    for meta in tqdm(metadata):
-        video_path = Path(DATA_PATH) / 'videos' / f"{meta['video_id']}.mp4"
-        video_tensor = video_embed(
-            str(video_path), image_processor, max_frames_num = max_frames_num, 
-            ).to(model.device, dtype=model.dtype) # 57200
-        text_info = longvideobench_doc_to_text(meta, max_num_frames=max_frames_num, data_path=DATA_PATH, subtitle=False)
-        input_ids = tokenizer_image_token(text_info, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt").unsqueeze(0).to(video_tensor.device)
-        with torch.inference_mode():
-            output_ids = model.generate(
-                input_ids, images=[video_tensor], modalities=["video"], 
-                do_sample=True, temperature=0.5, top_p=None, 
-                num_beams=1, use_cache=True, max_new_tokens=1024
-                )
-        outputs = tokenizer.batch_decode(output_ids, skip_special_tokens=True)[0].strip()
-        score_dict = longvideobench_process_results(meta, outputs)
-        write_or_append_json(json_name, score_dict['lvb_acc'])
 
 
 def write_or_append_json(file_path, new_data):
@@ -159,6 +121,7 @@ def evaluate_longvideobench(samples):
     pred_correct = 0
     judge_dict = dict()
     for sample in samples:
+        sample = sample["lvb_acc"]
         gold_i = sample["answer"]
         pred_i = sample["parsed_pred"]
         correct = eval_multi_choice(gold_i, pred_i)
@@ -211,12 +174,11 @@ def parse_multi_choice_response(response, all_choices, index2ans):
 
     matches = re.search(r"[ABCDE]", s)
     if matches is None:
-        return random.choice(all_choices)
+        return ""
     return matches[0]
 
 
-def longvideobench_process_results(doc, results):
-    pred = results[0]
+def longvideobench_process_results(doc, pred):
     all_choices = []
     index2ans = {}
     candidates = doc["candidates"]
@@ -239,26 +201,13 @@ def longvideobench_process_results(doc, results):
             id: pred,
         },
     }
-    
-if __name__ == "__main__":
-    DATA_PATH = "/home/server08/yoonjeon_workspace/VideoPrefill/LongVA/dataset/LongVideoBench"
-    metadata_path = Path(DATA_PATH) / "lvb_val.json"
-    max_frames_num = 100
-    
-    with open(metadata_path, "r") as f:
-        metadata = json.load(f)
+
+def summarize_results():
+    for attn_json in ["answers_vanilla.json", "answers_minference.json", "answers_flexprefill.json"]:
+        with open(attn_json, "r") as f:
+            samples = json.load(f)
+        judge_dict, acc = evaluate_longvideobench(samples)
+        print(f"------------{attn_json}------------")
+        # print(judge_dict)
+        print(acc) #!
         
-    model_path = "lmms-lab/LongVA-7B-DPO" # you can also set the device map to auto to accomodate more frames
-    attn_type = "flexprefill" # None "minference" "flexprefill"
-    model, tokenizer, image_processor = load_model(model_path, device_map= "cuda")
-    
-    json_name = "answers_vanilla.json" if attn_type is None else f"answers_{attn_type}.json"
-    if os.path.exists(json_name):
-        os.remove(json_name)
-    evaluate_multiple(model, tokenizer, image_processor, metadata, max_frames_num, json_name)
-    print("Evaluation done. Samples are saved in samples.json")
-    with open("samples.json", "r") as f:
-        samples = json.load(f)
-    judge_dict, acc = evaluate_longvideobench(samples)
-    print(judge_dict)
-    print(acc)
