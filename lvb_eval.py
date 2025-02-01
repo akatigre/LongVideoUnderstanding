@@ -4,6 +4,14 @@ from pathlib import Path
 
 from lvb_utils import longvideobench_doc_to_text, longvideobench_process_results, write_or_append_json
 from run_hf import *
+from tqdm import trange
+from transformers.generation.utils import GenerationMixin
+
+HOMER = True
+
+def gather_logits(logits, input_ids):
+    input_ids = input_ids[0, 1 : logits.size(1) + 1].unsqueeze(-1)
+    return logits.log_softmax(dim=-1)[0].gather(1, input_ids).squeeze()
 
 def evaluate_multiple(model, tokenizer, vision_processor, metadata, json_name, undone_ids, data_path, system_prompt):
     for meta in tqdm(metadata):
@@ -13,10 +21,18 @@ def evaluate_multiple(model, tokenizer, vision_processor, metadata, json_name, u
         question = longvideobench_doc_to_text(meta, max_num_frames = args.num_frames, data_path = data_path, subtitle=False, system_prompt=system_prompt)
         device = next(model.parameters()).device
         dtype = model.dtype
-        inputs = prepare_fn(video_path = video_path, text = question, tokenizer = tokenizer, vision_processor = vision_processor, max_frames_num = args.num_frames, 
-                            device=device, dtype=dtype)
+        inputs = prepare_fn(
+            video_path = video_path, 
+            text = question, 
+            tokenizer = tokenizer, 
+            model = model,
+            vision_processor = vision_processor, 
+            max_frames_num = args.num_frames, 
+            device=device, 
+            dtype=dtype
+            )
         output_ids = generate_fn(model=model, tokenizer=tokenizer, inputs=inputs,)
-        
+    
         decoder = tokenizer if hasattr(tokenizer, "batch_decode") else vision_processor
         outputs = decoder.batch_decode(
             output_ids, 
@@ -24,6 +40,7 @@ def evaluate_multiple(model, tokenizer, vision_processor, metadata, json_name, u
             clean_up_tokenization_spaces=False
             )[0].strip() # tokenizer OR processor
         score_dict = longvideobench_process_results(meta, pred=outputs)
+        
         write_or_append_json(json_name, score_dict)
         
 def main(args):
@@ -45,12 +62,12 @@ def main(args):
     if len(undone_ids) > 0:
         model, tokenizer, image_processor = prepare_models(args, load_fn)
         evaluate_multiple(model, tokenizer, image_processor, metadata, json_name, undone_ids, data_path=args.data_path, system_prompt=system_prompt)
-        print(f"Evaluation done. Samples are saved in {json_name}")  
-           
+        print(f"Evaluation done. Samples are saved in {json_name}")
+
 if __name__ == "__main__":
     from argparse import ArgumentParser
     parser = ArgumentParser()
-    parser.add_argument("--attn-type", type=str, default="dense", choices=["dense", "minference", "flexprefill", "inf_llm", "hf", "a_shape", "minference_with_dense"])
+    parser.add_argument("--attn-type", type=str, default="dense", choices=["dense", "flexprefill_homer", "minference_homer", "minference", "flexprefill", "inf_llm", "hf", "a_shape", "minference_with_dense"])
     parser.add_argument("--data-path", type=str, default="./dataset/LongVideoBench")
     parser.add_argument("--save-dir", type=str, default="./lvb_answers")
     parser.add_argument("--num-frames", type=int, default=256, choices=[64, 256, 400, 512])

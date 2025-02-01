@@ -10,8 +10,9 @@ import numpy as np
 from minference import MInference
 from decord import VideoReader, cpu
 from transformers import AutoTokenizer
-
-
+from longva.model.language_model.llava_qwen import LlavaQwenForCausalLM
+from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+from transformers.models.qwen2_vl.processing_qwen2_vl import Qwen2VLProcessor
 def prepare_models(args, load_fn):
     model_path_map = {
         "longVA": "lmms-lab/LongVA-7B-DPO", 
@@ -28,22 +29,40 @@ def prepare_models(args, load_fn):
         )
         minference_patch = MInference("minference", model_name, config_path=config_path, kv_cache_cpu=True,)
         model = minference_patch(model)
+      
     elif args.attn_type == "flexprefill":
-        minference_patch = MInference("flexprefill", model_name, attn_kwargs={"gamma": 0.9, "tau": 0.1, "min_budget": None, "max_budget": None, "block_size": 64})
+        minference_patch = MInference(
+            "flexprefill", 
+            model_name, 
+            attn_kwargs = {
+                "gamma": 0.9, 
+                "tau": 0.1, 
+                "min_budget": None,
+                "max_budget": None,
+                "block_size": 32
+                }
+            )
+        model = minference_patch(model)
+    elif args.attn_type == "minference_homer":
+        BASE_DIR = "./MInference/minference/configs/"
+        config_path = os.path.join(
+            BASE_DIR, "Qwen2_7B_Instruct_128k_instruct_kv_out_v32_fit_o_best_pattern.json"
+        )
+        minference_patch = MInference("minference_homer", model_name, config_path=config_path, kv_cache_cpu=True,) # 
+        model = minference_patch(model)
+    elif args.attn_type == "flexprefill_homer":
+        minference_patch = MInference("flexprefill_homer", model_name, attn_kwargs = {
+                    "gamma": 0.9, 
+                    "tau": 0.1, 
+                    "min_budget": None,
+                    "max_budget": None,
+                    "block_size": 64
+                    })
         model = minference_patch(model)
     return model, tokenizer, image_processor
 
-#! Process video
-def video_extract_frames(video_path, max_frames_num):
-    vr = VideoReader(video_path, ctx=cpu(0))
-    total_frame_num = len(vr)
-    uniform_sampled_frames = np.linspace(0, total_frame_num - 1, max_frames_num, dtype=int)
-    frame_idx = uniform_sampled_frames.tolist()
-    frames = vr.get_batch(frame_idx).asnumpy()
-    return frames
-
 def load_qwen2_model(model_path, device_map):
-    from transformers import Qwen2VLForConditionalGeneration, AutoProcessor
+    
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
     model = Qwen2VLForConditionalGeneration.from_pretrained(
         model_path, 
@@ -54,8 +73,7 @@ def load_qwen2_model(model_path, device_map):
     processor = AutoProcessor.from_pretrained(model_path)
     return model, tokenizer, processor
 
-
-def qwen2_prepare_embeds(video_path, text, vision_processor, max_frames_num, **kwargs):
+def qwen2_prepare_embeds(video_path, text, vision_processor: Qwen2VLProcessor, max_frames_num, **kwargs):
     from qwen_vl_utils import process_vision_info
     
     messages = [
@@ -73,46 +91,44 @@ def qwen2_prepare_embeds(video_path, text, vision_processor, max_frames_num, **k
         ]
     
     images, videos = process_vision_info(messages)
-        
     text = vision_processor.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True
     )
     inputs = vision_processor(text=[text], videos=videos, images = images, padding=True, return_tensors="pt")
-        
     return inputs.to('cuda')
 
-def qwen2_generate_answer(model, inputs, tokenizer):
-    gen_kwargs = {
+def qwen2_generate_answer(model: Qwen2VLForConditionalGeneration, input_ids, attention_mask, pixel_values_videos, video_grid_thw, tokenizer, **kwargs):
+    kwargs.update(
+    {
             "temperature": 0,
             "top_p": None,
             "num_beams": 1,
             "max_new_tokens": 128,
-            "use_cache": None
+            "use_cache": False
         }
+    )
     output = model.generate(
-        **inputs,
+        input_ids = input_ids, 
+        attention_mask = attention_mask, 
+        pixel_values_videos = pixel_values_videos, 
+        video_grid_thw = video_grid_thw, 
         eos_token_id = tokenizer.eos_token_id,
         pad_token_id = tokenizer.eos_token_id,
-        do_sample=True if gen_kwargs["temperature"] > 0 else False,
-        **gen_kwargs,
+        do_sample=True if kwargs["temperature"] > 0 else False,
+        **kwargs,
     )
-    if isinstance(inputs, dict) and "inputs" in inputs:
-        prefix_len = inputs["inputs"].size(1)
-    elif hasattr(inputs, "input_ids"):
-        prefix_len = len(inputs.input_ids[0])
-    trimmed_output_ids = output[:, prefix_len :]
-    return trimmed_output_ids
+    return output
     
-def load_longva_model(model_path, device_map):
+def load_longva_model(model_path, device_map, dtype=torch.float16):
     from longva.model.language_model.llava_qwen import LlavaQwenForCausalLM
     from longva.constants import DEFAULT_IMAGE_PATCH_TOKEN, DEFAULT_IM_START_TOKEN, DEFAULT_IM_END_TOKEN
     tokenizer = AutoTokenizer.from_pretrained(model_path, use_fast=False)
     model = LlavaQwenForCausalLM.from_pretrained(
-        model_path, 
-        low_cpu_mem_usage=True, 
-        attn_implementation="flash_attention_2", 
-        device_map = device_map, 
-        torch_dtype = "auto",
+        model_path,
+        low_cpu_mem_usage=True,
+        attn_implementation="flash_attention_2",
+        device_map = device_map,
+        torch_dtype = dtype,
         )
     mm_use_im_start_end = getattr(model.config, "mm_use_im_start_end", False)
     mm_use_im_patch_token = getattr(model.config, "mm_use_im_patch_token", True)
@@ -128,33 +144,42 @@ def load_longva_model(model_path, device_map):
         vision_tower.to(device=device_map, dtype=torch.float16)
     image_processor = vision_tower.image_processor
     return model, tokenizer, image_processor
-    
-def longva_prepare_embeds(video_path, text, tokenizer, vision_processor, max_frames_num, device, dtype):
+
+
+def longva_prepare_embeds(video_path, text, tokenizer, vision_processor, model: LlavaQwenForCausalLM, max_frames_num, device, dtype):
     from longva.mm_utils import tokenizer_image_token
     from longva.constants import IMAGE_TOKEN_INDEX
     frames = video_extract_frames(video_path, max_frames_num)
     
     video_embeds = vision_processor.preprocess(frames, return_tensors="pt")["pixel_values"].to(device, dtype=dtype)
     input_ids = tokenizer_image_token(text, tokenizer, IMAGE_TOKEN_INDEX, return_tensors="pt").unsqueeze(0).to(device)
+    position_ids = None
+    attention_mask = None
+    images = [video_embeds]
+    modalities = ["video"]
+    image_sizes = None
+    if images is not None:
+        (inputs, position_ids, attention_mask, _, inputs_embeds, inputs_ids) = model.prepare_inputs_labels_for_multimodal(
+            input_ids, position_ids, attention_mask, None, None, images, modalities, image_sizes=image_sizes
+            )
+    else:
+        inputs_embeds = model.get_model().embed_tokens(input_ids)
     return {
-        "inputs": input_ids, 
-        "images": [video_embeds]
+        "position_ids": position_ids,
+        "attention_mask": attention_mask,
+        "inputs_embeds": inputs_embeds,
+        "inputs_ids": inputs_ids
         }
 
-def longva_generate_answer(model, inputs, **gen_kwargs):
-    gen_kwargs.update({
-        "temperature": 0.5,
-        "top_p": None,
-        "num_beams": 1,
-        "max_new_tokens": 1024,
-        "use_cache": True,
-        "do_sample": True,
-    })
+def longva_generate_answer(position_ids, attention_mask, inputs_embeds, model_generate, model, **kwargs):
+
     with torch.inference_mode():
-        output_ids = model.generate(
-            modalities = ["video"],
-            **inputs,
-            **gen_kwargs,
+        output_ids = model_generate(
+            model,
+            position_ids=position_ids, 
+            attention_mask=attention_mask, 
+            inputs_embeds=inputs_embeds,
+            **kwargs
             )
     return output_ids
 
@@ -253,7 +278,7 @@ def model_system_prompt(model_name):
         <|im_start|>assistant\n
         """
     
-    qwen_prompt =lambda x: x
+    qwen_prompt = lambda x: x
         
     longvila_prompt = lambda x: f"USER: <video>\n{x} ASSISTANT:"
     prompt_map = {

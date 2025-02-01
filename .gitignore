@@ -1,5 +1,6 @@
 .vscode/**
 MInference/**
+MMVU/**
 **/dataset/**
 **/answers_*.json
 **/__pycache__/*
