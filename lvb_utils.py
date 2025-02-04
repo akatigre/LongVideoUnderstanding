@@ -3,26 +3,31 @@ import re
 import json
 import random
 from pathlib import Path
+import torch
+from decord import VideoReader, cpu
+from PIL import Image
 
 def timestamp_to_seconds(timestamp):
     h, m, s = timestamp.split(":")
     total_seconds = int(h) * 3600 + int(m) * 60 + float(s)
     return total_seconds
 
-def insert_subtitles_into_frames(frame_timestamps, subtitles, starting_timestamp_for_subtitles, duration):
+def insert_subtitles_into_frames(frames, frame_timestamps, subtitles, 
+                                 starting_timestamp_for_subtitles, duration):
     interleaved_list = []
     cur_i = 0
-
+    
     for subtitle in subtitles:
         if "timestamp" in subtitle:
             start, end = subtitle["timestamp"]
 
             if not isinstance(end, float):
                 end = duration
-
+                
             start -= starting_timestamp_for_subtitles
             end -= starting_timestamp_for_subtitles
-
+            
+            
             subtitle_timestamp = (start + end) / 2
             subtitle_text = subtitle["text"]
         else:
@@ -31,41 +36,60 @@ def insert_subtitles_into_frames(frame_timestamps, subtitles, starting_timestamp
             end = timestamp_to_seconds(end)
             start -= starting_timestamp_for_subtitles
             end -= starting_timestamp_for_subtitles
-
+            
             subtitle_timestamp = (start + end) / 2
             subtitle_text = subtitle["line"]
 
-        for i, frame_timestamp in enumerate(frame_timestamps[cur_i:]):
-            if frame_timestamp <= subtitle_timestamp:
-                # print("frame:", frame_timestamp)
-                interleaved_list.append("<image>")
-                cur_i += 1
-            else:
-                break
+        
+        for i, (frame, frame_timestamp) in enumerate(zip(frames[cur_i:], frame_timestamps[cur_i:])):
+                if frame_timestamp <= subtitle_timestamp:
+                    #print("frame:", frame_timestamp)
+                    interleaved_list.append(frame)
+                    cur_i += 1
+                else:
+                    break
 
         if end - start < 1:
             end = subtitle_timestamp + 0.5
             start = subtitle_timestamp - 0.5
 
         covering_frames = False
-        for frame_timestamp in frame_timestamps:
+        for frame, frame_timestamp in zip(frames, frame_timestamps):
             if frame_timestamp < end and frame_timestamp > start:
                 covering_frames = True
                 break
-
+        #
         if covering_frames:
-            # print("subtitle:", subtitle_timestamp, start, end)
+            #print("subtitle:", subtitle_timestamp, start, end)
             interleaved_list.append(subtitle_text)
         else:
             pass
-            # print("leaving out subtitle:", start, end)
+            #print("leaving out subtitle:", start, end)
+        
+    for i, (frame, frame_timestamp) in enumerate(zip(frames[cur_i:], frame_timestamps[cur_i:])):
+        #print(frame_timestamp)
+        interleaved_list.append(frame)
+        
+    return interleaved_list
 
-    for i, frame_timestamp in enumerate(frame_timestamps[cur_i:]):
-        interleaved_list.append("<image>")
-
-    return "\n".join(interleaved_list)
 
 
+def load_video(video_file, duration, max_num_frames=16):
+    vr = VideoReader(str(video_file), ctx=cpu(0), num_threads=1)
+    fps = vr.get_avg_fps()
+    total_valid_frames = int(duration * fps)
+    num_frames = min(max_num_frames, int(duration))
+
+    frame_indices = [int(total_valid_frames / num_frames) * i for i in range(num_frames)]
+    
+    frames = vr.get_batch(frame_indices)
+    if isinstance(frames, torch.Tensor):
+        frames = frames.numpy()
+    else:
+        frames = frames.asnumpy()
+    frame_timestamps = [frame_index / fps for frame_index in frame_indices]
+    
+    return [Image.fromarray(fr).convert("RGB") for fr in frames], frame_timestamps
 
 def compute_frame_timestamps(duration, max_num_frames=16):
     if duration > max_num_frames:
@@ -74,28 +98,29 @@ def compute_frame_timestamps(duration, max_num_frames=16):
         return [i for i in range(int(duration))]
 
 
-def longvideobench_doc_to_text(meta, max_num_frames, data_path, subtitle=True, system_prompt=None):
+def longvideobench_doc_to_text(meta, args, subtitle=True):
     candidates = meta["candidates"]
+    video_path = Path(args.data_path) / 'videos' / f"{meta['video_id']}.mp4"
+    frames, frame_timestamps = load_video(video_path, duration=meta["duration"], max_num_frames=args.max_frames_num)
     
-    pre_prompt = ""
     post_prompt = "Answer with the option's letter from the given choices directly.\n"
     if subtitle:
-        subtitle_path = Path(data_path) / "subtitles" / meta["subtitle_path"]
+        subtitle_path = Path(args.data_path) / "subtitles" / meta["subtitle_path"]
         with open(subtitle_path, "r") as f:
             subtitles = json.load(f)
 
-        frame_timestamps = compute_frame_timestamps(meta["duration"], max_num_frames)
-        interleaved_prefix = insert_subtitles_into_frames(
+        interleaved_video_subtitles = insert_subtitles_into_frames(
+            frames,
             frame_timestamps, 
             subtitles,
             meta["starting_timestamp_for_subtitles"],
             meta["duration"]
             )
         question = meta["question"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-        return f"{pre_prompt}{interleaved_prefix}\n{question}\n{post_prompt}"
+        return interleaved_video_subtitles, question, post_prompt
     else:
         question = meta["question_wo_referring_query"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-        return system_prompt(f'{pre_prompt}\n{question}\n{post_prompt}')
+        return frames, question, post_prompt
  
 
 

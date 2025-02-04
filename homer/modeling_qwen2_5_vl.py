@@ -2163,7 +2163,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
 
             # Used in prepare_inputs_for_generation() to adjust position ids
             homer_prefix["cache"].pos_diff = (
-                prefix_len - homer_prefix["last_position_id"]
+                prefix_len - homer_prefix["last_position_id"].to(self.device)
             )
             input_ids = torch.cat(
                 [
@@ -2216,16 +2216,16 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
 
             # TODO: Implement decoder layer forward()
             decoder_outputs = self.model.layers[i_layer](
-                hidden_states=hidden_states,
+                hidden_states=hidden_states.to(self.device),
                 attention_mask=None,  # Attention mask not required for Flash Attention
-                position_ids=position_ids,
+                position_ids=position_ids.to(self.device),
                 past_key_value=past_key_value,
                 output_attentions=True,
                 use_cache=True,
                 position_embeddings=None,
             )
 
-            hidden_states = decoder_outputs[0]
+            hidden_states = decoder_outputs[0].to(position_ids.device)
 
             if num_tokens_to_reduce > 0 and i == len(layers) - 1:
                 prune_mask = self.merge_manager.layer_reduction_results["prune_mask"]
@@ -2267,26 +2267,24 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         batch_size, seq_length = input_ids.size()
         assert batch_size == 1
         input_ids = input_ids.view(-1, seq_length)
-        inputs_embeds = self.model.embed_tokens(input_ids)
+        inputs_embeds = self.model.embed_tokens(input_ids.to(self.device))
         ######################## MODIFIED FROM ORIGINAL CODE ########################
-        
-        n_video_tokens = (input_ids == self.config.video_token_id).sum().item()
-        n_video_features = image_embeds.shape[0]
-        if n_video_tokens != n_video_features:
+        n_image_tokens = (input_ids == self.config.image_token_id).sum().item()
+        n_image_features = image_embeds.shape[0]
+        if n_image_tokens != n_image_features:
             raise ValueError(
-                f"Video features and video tokens do not match: tokens: {n_video_tokens}, features {n_video_features}"
+                f"Image features and image tokens do not match: tokens: {n_image_tokens}, features {n_image_features}"
             )
-        video_mask = (
-            (input_ids == self.config.video_token_id)
-            .unsqueeze(-1)
-            .expand_as(inputs_embeds)
-            .to(inputs_embeds.device)
-        )
-        image_embeds = image_embeds.to(inputs_embeds.device, inputs_embeds.dtype)
-        inputs_embeds = inputs_embeds.masked_scatter(video_mask, image_embeds)
 
+        mask = input_ids == self.config.image_token_id
+        mask_unsqueezed = mask.unsqueeze(-1)
+        mask_expanded = mask_unsqueezed.expand_as(inputs_embeds)
+        image_mask = mask_expanded.to(inputs_embeds.device)
+
+        image_embeds = image_embeds.to(inputs_embeds.device, inputs_embeds.dtype)
+        inputs_embeds = inputs_embeds.masked_scatter(image_mask, image_embeds)
         ##############################################################################
-        hidden_states = inputs_embeds
+        hidden_states = inputs_embeds.to(input_ids.device)
         chunk.hidden_states = hidden_states  # Update chunk
 
         # Step 2: Get encoder layers for processing this chunk
@@ -2417,15 +2415,15 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
                             prefix_ids, 
                             context_ids, 
                             suffix_ids, 
-                            pixel_values_videos, 
-                            video_grid_thw,
+                            pixel_values, 
+                            image_grid_thw,
                             attention_mask,
                             ):
         assert prefix_ids is not None
         assert context_ids is not None
         assert suffix_ids is not None
-        assert pixel_values_videos is not None
-        assert video_grid_thw is not None
+        assert pixel_values is not None
+        assert image_grid_thw is not None
         assert attention_mask is not None
         # from transformers.models.qwen2_vl.modeling_qwen2_vl import Qwen2VLForConditionalGeneration
         prefix_len = prefix_ids.size(1)
@@ -2466,10 +2464,12 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
             layers_leftover,
         )
         ############# MODIFIED FROM ORIGINAL CODE #############
-        pixel_values_videos = pixel_values_videos.type(self.visual.get_dtype())
-        image_embeds = self.visual(pixel_values_videos, grid_thw = video_grid_thw) # t x h // merge_size x w // merge_size, h_dim
+        pixel_values = pixel_values.type(self.visual.get_dtype())
+        image_embeds = self.visual(pixel_values.to(self.device), grid_thw = image_grid_thw.to(self.device)) # t x h // merge_size x w // merge_size, h_dim
+        image_embeds = image_embeds.to(context_ids.device)
+        torch.cuda.empty_cache()
         spatial_merge_size = self.config.vision_config.spatial_merge_size
-        t, h, w = int(video_grid_thw[0][0]), int(video_grid_thw[0][1] / spatial_merge_size), int(video_grid_thw[0][2] / spatial_merge_size)
+        t, h, w = len(image_grid_thw), int(image_grid_thw[0][1] / spatial_merge_size), int(image_grid_thw[0][2] / spatial_merge_size)
         eff_chunk_len = math.ceil(context_len / num_chunks)
         
         #######################################################
@@ -2481,8 +2481,9 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
             num_chunks=num_chunks,
             eff_chunk_len=eff_chunk_len,
             visualize=self.merge_manager.visualize,
-            image_embeds=rearrange(image_embeds, "(t h w) c -> t h w c", t=t, h=h, w=w), # t x h x w, 3584
+            image_embeds=rearrange(image_embeds, "(t h w) c -> t h w c", t=len(image_grid_thw), h=h, w=w), # t x h x w, 3584
             get_rope_index=self.get_rope_index,
+            end_token_id=self.config.vision_end_token_id,
         ) # list of prefix + partial context + suffix
 
         final_target_len = min(self.merge_manager.target_len, total_len)
@@ -2499,7 +2500,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         self.context_ids = context_ids[0].cpu()
 
         # assert self.config.pretraining_tp <= 1
-        hidden_states = self.model.norm(chunk.hidden_states)
+        hidden_states = self.model.norm(chunk.hidden_states.to(self.device))
         logits = self.lm_head(hidden_states)
         logits = logits.float()
 
@@ -2509,7 +2510,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         return {
             "cache": chunk.cache,
             "last_position_id": chunk.position_ids[0, :, -1],
-            "logits": logits,
+            "logits": logits.to(chunk.position_ids.device),
         }
         
         

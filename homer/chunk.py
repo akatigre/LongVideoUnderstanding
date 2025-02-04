@@ -367,6 +367,7 @@ class Chunk:
         eff_chunk_len,
         image_embeds,
         get_rope_index,
+        end_token_id,
         image_grid_thw=None,
         video_grid_thw=None,
         visualize=False,
@@ -375,13 +376,20 @@ class Chunk:
         assert context_ids is not None, "Context input IDs must be provided"
         device = context_ids.device
 
-        # full_context_len = context_ids.size(1)
+        full_context_len = context_ids.size(1)
         
         ############# MODIFIED FROM ORIGINAL CODE #############
-        t, h, w, _ = image_embeds.shape
-        chunk_time = eff_chunk_len // (h * w)
         bsz = prefix_ids.size(0)
-        context_ids = rearrange(context_ids, "b (t h w) -> b t h w", t=t, h=h, w=w)
+        img_end_pos = (context_ids == end_token_id).nonzero()[:, 1]
+        optimal_chunk_pos = torch.arange(full_context_len // num_chunks, full_context_len, full_context_len // num_chunks)
+        closest_positions = []
+        closest_frame_idx = []
+        for pos in optimal_chunk_pos:
+            closest_idx = torch.abs(img_end_pos - pos).argmin()
+            closest_pos = img_end_pos[closest_idx]
+            closest_positions.append(closest_pos + 1) # +1 because indexing do not include the end token
+            closest_frame_idx.append(closest_idx+1)
+        closest_positions = torch.tensor(closest_positions, device=device)
         #######################################################
         prefix_len = prefix_ids.size(1) if prefix_ids is not None else 0
         suffix_len = suffix_ids.size(1) if suffix_ids is not None else 0
@@ -390,11 +398,13 @@ class Chunk:
         
         for i in range(num_chunks):
             ############# MODIFIED FROM ORIGINAL CODE #############
-            start_t = i * chunk_time
-            end_t = min((i + 1) * chunk_time, t)
-            context_len = (end_t - start_t) * h * w
-            chunk_context_ids = context_ids[:, start_t:end_t, :, :].reshape(bsz, -1)
-            input_image_embeds = image_embeds[start_t:end_t].reshape(bsz, -1, image_embeds.size(-1))
+            start_t = 0 if i == 0 else closest_positions[i - 1]
+            end_t = closest_positions[i] if i != num_chunks - 1 else full_context_len
+            start_frame = 0 if i == 0 else closest_frame_idx[i - 1]
+            end_frame = closest_frame_idx[i] if i != num_chunks - 1 else image_embeds.shape[0]
+            context_len = end_t - start_t
+            chunk_context_ids = context_ids[:, start_t : end_t]
+            input_image_embeds = image_embeds[start_frame:end_frame].reshape(bsz, -1, image_embeds.size(-1))
             #######################################################
             # start_idx = i * eff_chunk_len
             # end_idx = min((i + 1) * eff_chunk_len, full_context_len)
@@ -411,7 +421,6 @@ class Chunk:
                 dim=1,
             )
 
-            
             # calculate RoPE index once per generation in the pre-fill stage only
             position_ids, rope_deltas = get_rope_index(
                     input_ids, image_grid_thw, video_grid_thw, attention_mask=None
