@@ -1,0 +1,1226 @@
+[
+    {
+        "lvb_acc": {
+            "id": "86CxyhFV9MI_0",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "B",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "86CxyhFV9MI_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "86CxyhFV9MI_1",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "C",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "86CxyhFV9MI_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "9PD3ciudpIE_0",
+            "duration_group": 600,
+            "question_category": "T2A",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "9PD3ciudpIE_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "9PD3ciudpIE_1",
+            "duration_group": 600,
+            "question_category": "T2A",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "9PD3ciudpIE_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "5qMcDQd17Y4_0",
+            "duration_group": 600,
+            "question_category": "T2O",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "5qMcDQd17Y4_0": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "5qMcDQd17Y4_1",
+            "duration_group": 600,
+            "question_category": "T2O",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "5qMcDQd17Y4_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "7F9IrtSHmc0_0",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "7F9IrtSHmc0_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "7F9IrtSHmc0_1",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "7F9IrtSHmc0_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "QJ6sjg7SXOQ_0",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "E",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "QJ6sjg7SXOQ_0": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "QJ6sjg7SXOQ_1",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "C",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "QJ6sjg7SXOQ_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "mH9LdC7IFH8_0",
+            "duration_group": 600,
+            "question_category": "T3E",
+            "answer": "B",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "mH9LdC7IFH8_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "mH9LdC7IFH8_1",
+            "duration_group": 600,
+            "question_category": "T3E",
+            "answer": "A",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "mH9LdC7IFH8_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "LB1qPExHQY8_0",
+            "duration_group": 600,
+            "question_category": "TAA",
+            "answer": "A",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "LB1qPExHQY8_0": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "LB1qPExHQY8_1",
+            "duration_group": 600,
+            "question_category": "TAA",
+            "answer": "B",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "LB1qPExHQY8_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "8hhcFRoR0mw_0",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "8hhcFRoR0mw_0": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "8hhcFRoR0mw_1",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "8hhcFRoR0mw_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "h4jIoMxZopU_0",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "E",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "h4jIoMxZopU_0": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "h4jIoMxZopU_1",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "h4jIoMxZopU_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "M7YSCIkUaNw_0",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "M7YSCIkUaNw_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "M7YSCIkUaNw_1",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "D",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "M7YSCIkUaNw_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "x1FkhxMMIcg_0",
+            "duration_group": 600,
+            "question_category": "SSS",
+            "answer": "C",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "x1FkhxMMIcg_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "CEZ9rbjK3P4_0",
+            "duration_group": 600,
+            "question_category": "SOS",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "CEZ9rbjK3P4_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "CEZ9rbjK3P4_1",
+            "duration_group": 600,
+            "question_category": "SOS",
+            "answer": "A",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "CEZ9rbjK3P4_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "MPQn_orwpfA_0",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "MPQn_orwpfA_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "MPQn_orwpfA_1",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "D",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "MPQn_orwpfA_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "5KLSf7kwr7s_0",
+            "duration_group": 600,
+            "question_category": "E2O",
+            "answer": "E",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "5KLSf7kwr7s_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "5KLSf7kwr7s_1",
+            "duration_group": 600,
+            "question_category": "E2O",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "5KLSf7kwr7s_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "rMXJOKhf_AA_0",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "D",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "rMXJOKhf_AA_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "rMXJOKhf_AA_1",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "C",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "rMXJOKhf_AA_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "LcZxjqtzXJI_0",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "A",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "LcZxjqtzXJI_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "LcZxjqtzXJI_1",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "E",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "LcZxjqtzXJI_1": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "JIoE18JYGcM_0",
+            "duration_group": 600,
+            "question_category": "S2A",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "JIoE18JYGcM_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "JIoE18JYGcM_1",
+            "duration_group": 600,
+            "question_category": "S2A",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "JIoE18JYGcM_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "rZq-8Bq3mkU_0",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "E",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "rZq-8Bq3mkU_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "rZq-8Bq3mkU_1",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "E",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "rZq-8Bq3mkU_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "VSZ8ywgGNGM_0",
+            "duration_group": 600,
+            "question_category": "E2O",
+            "answer": "D",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "VSZ8ywgGNGM_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "VSZ8ywgGNGM_1",
+            "duration_group": 600,
+            "question_category": "E2O",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "VSZ8ywgGNGM_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "ezhafkxoRdo_0",
+            "duration_group": 600,
+            "question_category": "T3E",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "ezhafkxoRdo_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "ezhafkxoRdo_1",
+            "duration_group": 600,
+            "question_category": "T3E",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "ezhafkxoRdo_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "wxWo44MoCTI_0",
+            "duration_group": 600,
+            "question_category": "SAA",
+            "answer": "B",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "wxWo44MoCTI_0": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "wxWo44MoCTI_1",
+            "duration_group": 600,
+            "question_category": "SAA",
+            "answer": "A",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "wxWo44MoCTI_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "VkNF0rXuDXw_0",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "VkNF0rXuDXw_0": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "VkNF0rXuDXw_1",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "VkNF0rXuDXw_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "v0QLje6xYgA_0",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "D",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "v0QLje6xYgA_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "UUaiqR1I454_0",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "C",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "UUaiqR1I454_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "UUaiqR1I454_1",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "C",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "UUaiqR1I454_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "x4dFLY_-vKs_0",
+            "duration_group": 600,
+            "question_category": "T2O",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "x4dFLY_-vKs_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "x4dFLY_-vKs_1",
+            "duration_group": 600,
+            "question_category": "T2O",
+            "answer": "B",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "x4dFLY_-vKs_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "yn7oTvw8QRY_0",
+            "duration_group": 600,
+            "question_category": "O3O",
+            "answer": "D",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "yn7oTvw8QRY_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "yn7oTvw8QRY_1",
+            "duration_group": 600,
+            "question_category": "O3O",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "yn7oTvw8QRY_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "t1nhAnMQBHg_0",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "t1nhAnMQBHg_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "s1TjVlKBpjs_0",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "B",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "s1TjVlKBpjs_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "s1TjVlKBpjs_1",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "s1TjVlKBpjs_1": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "KIf2fGmluhY_0",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "C",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "KIf2fGmluhY_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "KIf2fGmluhY_1",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "A",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "KIf2fGmluhY_1": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "eJr-y6UXnRE_0",
+            "duration_group": 600,
+            "question_category": "O3O",
+            "answer": "E",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "eJr-y6UXnRE_0": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "eJr-y6UXnRE_1",
+            "duration_group": 600,
+            "question_category": "O3O",
+            "answer": "B",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "eJr-y6UXnRE_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "_zEM6Fc-7NI_0",
+            "duration_group": 600,
+            "question_category": "T2O",
+            "answer": "C",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "_zEM6Fc-7NI_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "_zEM6Fc-7NI_1",
+            "duration_group": 600,
+            "question_category": "T2O",
+            "answer": "A",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "_zEM6Fc-7NI_1": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "Z00vWImw1KQ_0",
+            "duration_group": 600,
+            "question_category": "E2O",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "Z00vWImw1KQ_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "Z00vWImw1KQ_1",
+            "duration_group": 600,
+            "question_category": "E2O",
+            "answer": "E",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "Z00vWImw1KQ_1": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "tGiRbGGwRj8_0",
+            "duration_group": 600,
+            "question_category": "S2A",
+            "answer": "B",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "tGiRbGGwRj8_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "tGiRbGGwRj8_1",
+            "duration_group": 600,
+            "question_category": "S2A",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "tGiRbGGwRj8_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "ixlQX7lV8dc_0",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "D",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "ixlQX7lV8dc_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "ixlQX7lV8dc_1",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "ixlQX7lV8dc_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "AnLMDMzO4QY_0",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "AnLMDMzO4QY_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "AnLMDMzO4QY_1",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "AnLMDMzO4QY_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "marOr6mJefE_0",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "C",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "marOr6mJefE_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "marOr6mJefE_1",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "marOr6mJefE_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "LHXS0QR1ThA_0",
+            "duration_group": 600,
+            "question_category": "SSS",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "LHXS0QR1ThA_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "qjY9kmveQAk_0",
+            "duration_group": 600,
+            "question_category": "S2O",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "qjY9kmveQAk_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "qjY9kmveQAk_1",
+            "duration_group": 600,
+            "question_category": "S2O",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "qjY9kmveQAk_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "QHS9ZZBdK-g_0",
+            "duration_group": 600,
+            "question_category": "S2A",
+            "answer": "A",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "QHS9ZZBdK-g_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "QHS9ZZBdK-g_1",
+            "duration_group": 600,
+            "question_category": "S2A",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "QHS9ZZBdK-g_1": "The primary advantage of using U-Net over BERT is that it is larger and more powerful.\n         It provides better interpretability.\n         It is faster and has a smaller memory footprint.\n         It is a higher capacity for model complexity."
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "h0OHi9uAcBo_0",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "B",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "h0OHi9uAcBo_0": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "h0OHi9uAcBo_1",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "B",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "h0OHi9uAcBo_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "SO3czkzeFjw_0",
+            "duration_group": 600,
+            "question_category": "SSS",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "SO3czkzeFjw_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "SO3czkzeFjw_1",
+            "duration_group": 600,
+            "question_category": "SSS",
+            "answer": "B",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "SO3czkzeFjw_1": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "liRm38L9EC4_0",
+            "duration_group": 600,
+            "question_category": "S2O",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "liRm38L9EC4_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "liRm38L9EC4_1",
+            "duration_group": 600,
+            "question_category": "S2O",
+            "answer": "E",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "liRm38L9EC4_1": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "zk6fgbXI5AE_0",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "D",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "zk6fgbXI5AE_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "zk6fgbXI5AE_1",
+            "duration_group": 600,
+            "question_category": "T3O",
+            "answer": "D",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "zk6fgbXI5AE_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "fxCRCMLJ0PU_0",
+            "duration_group": 600,
+            "question_category": "SSS",
+            "answer": "D",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "fxCRCMLJ0PU_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "bUaFXONIXzM_0",
+            "duration_group": 600,
+            "question_category": "SOS",
+            "answer": "D",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "bUaFXONIXzM_0": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "bUaFXONIXzM_1",
+            "duration_group": 600,
+            "question_category": "SOS",
+            "answer": "C",
+            "parsed_pred": "E"
+        },
+        "submission": {
+            "bUaFXONIXzM_1": "E"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "kLuqCtnKr_8_0",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "C",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "kLuqCtnKr_8_0": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "kLuqCtnKr_8_1",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "kLuqCtnKr_8_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "5zbV24vyO44_0",
+            "duration_group": 600,
+            "question_category": "T3E",
+            "answer": "B",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "5zbV24vyO44_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "5zbV24vyO44_1",
+            "duration_group": 600,
+            "question_category": "T3E",
+            "answer": "B",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "5zbV24vyO44_1": "C"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "OGaML8Gg8JQ_0",
+            "duration_group": 600,
+            "question_category": "SOS",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "OGaML8Gg8JQ_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "OGaML8Gg8JQ_1",
+            "duration_group": 600,
+            "question_category": "SOS",
+            "answer": "E",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "OGaML8Gg8JQ_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "otaJfBSlsG8_0",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "D",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "otaJfBSlsG8_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "otaJfBSlsG8_1",
+            "duration_group": 600,
+            "question_category": "TOS",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "otaJfBSlsG8_1": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "60-ADf8OL9A_0",
+            "duration_group": 600,
+            "question_category": "TAA",
+            "answer": "E",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "60-ADf8OL9A_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "60-ADf8OL9A_1",
+            "duration_group": 600,
+            "question_category": "TAA",
+            "answer": "B",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "60-ADf8OL9A_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "VL259eBJ68w_0",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "A",
+            "parsed_pred": "A"
+        },
+        "submission": {
+            "VL259eBJ68w_0": "A"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "VL259eBJ68w_1",
+            "duration_group": 600,
+            "question_category": "S2E",
+            "answer": "E",
+            "parsed_pred": "D"
+        },
+        "submission": {
+            "VL259eBJ68w_1": "D"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "d8H7hgQY9ew_0",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "C",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "d8H7hgQY9ew_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "d8H7hgQY9ew_1",
+            "duration_group": 600,
+            "question_category": "O2E",
+            "answer": "E",
+            "parsed_pred": ""
+        },
+        "submission": {
+            "d8H7hgQY9ew_1": ""
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "LYvStKy8iAc_0",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "B",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "LYvStKy8iAc_0": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "LYvStKy8iAc_1",
+            "duration_group": 600,
+            "question_category": "E3E",
+            "answer": "A",
+            "parsed_pred": "B"
+        },
+        "submission": {
+            "LYvStKy8iAc_1": "B"
+        }
+    },
+    {
+        "lvb_acc": {
+            "id": "rIU_BQEuKQ8_0",
+            "duration_group": 600,
+            "question_category": "T3E",
+            "answer": "A",
+            "parsed_pred": "C"
+        },
+        "submission": {
+            "rIU_BQEuKQ8_0": "C"
+        }
+    }
+]

@@ -2465,7 +2465,13 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         )
         ############# MODIFIED FROM ORIGINAL CODE #############
         pixel_values = pixel_values.type(self.visual.get_dtype())
-        image_embeds = self.visual(pixel_values.to(self.device), grid_thw = image_grid_thw.to(self.device)) # t x h // merge_size x w // merge_size, h_dim
+        #! batchify
+        image_embeds = []
+        for i in range(0, image_grid_thw.shape[0], 100):
+            grid = image_grid_thw[i:i+100]
+            pixels = pixel_values[i * grid[0].prod():(i+100) * grid[0].prod()]
+            image_embeds.append(self.visual(pixels.to(self.device), grid_thw = grid.to(self.device))) # t x h // merge_size x w // merge_size, h_dim
+        image_embeds = torch.cat(image_embeds, dim=0)
         image_embeds = image_embeds.to(context_ids.device)
         torch.cuda.empty_cache()
         spatial_merge_size = self.config.vision_config.spatial_merge_size

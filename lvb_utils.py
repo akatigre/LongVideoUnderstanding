@@ -74,56 +74,6 @@ def insert_subtitles_into_frames(frames, frame_timestamps, subtitles,
 
 
 
-def load_video(video_file, duration, max_num_frames=16):
-    vr = VideoReader(str(video_file), ctx=cpu(0), num_threads=1)
-    fps = vr.get_avg_fps()
-    total_valid_frames = int(duration * fps)
-    num_frames = min(max_num_frames, int(duration))
-
-    frame_indices = [int(total_valid_frames / num_frames) * i for i in range(num_frames)]
-    
-    frames = vr.get_batch(frame_indices)
-    if isinstance(frames, torch.Tensor):
-        frames = frames.numpy()
-    else:
-        frames = frames.asnumpy()
-    frame_timestamps = [frame_index / fps for frame_index in frame_indices]
-    
-    return [Image.fromarray(fr).convert("RGB") for fr in frames], frame_timestamps
-
-def compute_frame_timestamps(duration, max_num_frames=16):
-    if duration > max_num_frames:
-        return [duration / max_num_frames * i for i in range(max_num_frames)]
-    else:
-        return [i for i in range(int(duration))]
-
-
-def longvideobench_doc_to_text(meta, args, subtitle=True):
-    candidates = meta["candidates"]
-    video_path = Path(args.data_path) / 'videos' / f"{meta['video_id']}.mp4"
-    frames, frame_timestamps = load_video(video_path, duration=meta["duration"], max_num_frames=args.max_frames_num)
-    
-    post_prompt = "Answer with the option's letter from the given choices directly.\n"
-    if subtitle:
-        subtitle_path = Path(args.data_path) / "subtitles" / meta["subtitle_path"]
-        with open(subtitle_path, "r") as f:
-            subtitles = json.load(f)
-
-        interleaved_video_subtitles = insert_subtitles_into_frames(
-            frames,
-            frame_timestamps, 
-            subtitles,
-            meta["starting_timestamp_for_subtitles"],
-            meta["duration"]
-            )
-        question = meta["question"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-        return interleaved_video_subtitles, question, post_prompt
-    else:
-        question = meta["question_wo_referring_query"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-        return frames, question, post_prompt
- 
-
-
 def write_or_append_json(file_path, new_data):
     """
     Appends a list of new data to a JSON file if it exists, or creates the file if it doesn't.

@@ -10,7 +10,6 @@ from typing import Dict, List, Optional, Union
 import cv2
 import numpy as np
 import yaml
-from loguru import logger as eval_logger
 
 from file_utils import generate_submission_file
 
@@ -67,20 +66,6 @@ TASK_CATEGORIES = [
 
 replace_prompt = " Please answer yes or no."
 
-hf_home = os.getenv("HF_HOME", "~/.cache/huggingface/")
-# cache_dir = os.path.join(hf_home, cache_dir)
-# base_cache_dir = config["dataset_kwargs"]["cache_dir"]
-base_cache_dir = os.path.expanduser(hf_home)
-with open(Path(__file__).parent / "videomme.yaml", "r") as f:
-    raw_data = f.readlines()
-    safe_data = []
-    for i, line in enumerate(raw_data):
-        # remove function definition since yaml load cannot handle it
-        if "!function" not in line:
-            safe_data.append(line)
-cache_name = yaml.safe_load("".join(safe_data))["dataset_kwargs"]["cache_dir"]
-
-
 def parse_subtitle_time(time_str):
     h, m, s_ms = time_str.split(":")
     s, ms = s_ms.split(",")
@@ -122,21 +107,6 @@ def extract_subtitles(video_path, subtitle_path):
     return subtitle_frames, total_frame
 
 
-def videomme_doc_to_visual(doc):
-    cache_dir = os.path.join(base_cache_dir, cache_name)
-    video_path = doc["videoID"] + ".mp4"
-    video_path = os.path.join(cache_dir, "data", video_path)
-    if os.path.exists(video_path):
-        video_path = video_path
-    elif os.path.exists(video_path.replace("mp4", "MP4")):
-        video_path = video_path.replace("mp4", "MP4")
-    elif os.path.exists(video_path.replace("mp4", "mkv")):
-        video_path = video_path.replace("mp4", "mkv")
-    else:
-        sys.exit(f"video path:{video_path} does not exist, please check")
-    return [video_path]
-
-
 def videomme_doc_to_text(doc, system_prompt=None):
     option_prompt = "Select the best answer to the following multiple-choice question based on the video and the subtitles. Respond with only the letter (A, B, C, or D) of the correct option."
     question = doc["question"]
@@ -147,8 +117,7 @@ def videomme_doc_to_text(doc, system_prompt=None):
     return system_prompt(full_prompt)
 
 
-def videomme_doc_to_text_subtitle(doc, lmms_eval_specific_kwargs=None):
-    cache_dir = os.path.join(base_cache_dir, cache_name)
+def videomme_doc_to_text_subtitle(doc, cache_dir, lmms_eval_specific_kwargs=None):
     video_path = doc["videoID"] + ".mp4"
     video_path = os.path.join(cache_dir, "data", video_path)
     subtitle_path = os.path.join(cache_dir, "subtitle", doc["videoID"] + ".srt")
@@ -226,13 +195,6 @@ def extract_characters_regex(s):
     return matches[0]
 
 
-# matrices = []
-
-# for i in VIDEO_TYPE:
-#     for j in CATEGORIES:
-#         for k in SUB_CATEGORIES:
-#             for l in TASK_CATEGORIES:
-#                 matrices.append(f"{i}_{j}_{k}_{l}")
 
 
 def videomme_process_results(doc, pred):
@@ -287,7 +249,7 @@ def videomme_aggregate_results(results):
             if video_type in k:
                 total_correct += v["correct"]
                 total_answered += v["answered"]
-        eval_logger.info(f"Evaluation on video Type: {video_type}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
+        # eval_logger.info(f"Evaluation on video Type: {video_type}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
 
     for category in CATEGORIES:
         total_correct = 0
@@ -296,7 +258,7 @@ def videomme_aggregate_results(results):
             if category in k:
                 total_correct += v["correct"]
                 total_answered += v["answered"]
-        eval_logger.info(f"Evaluation on Categories: {category}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
+        # eval_logger.info(f"Evaluation on Categories: {category}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
 
     for sub_cate in SUB_CATEGORIES:
         total_correct = 0
@@ -305,7 +267,7 @@ def videomme_aggregate_results(results):
             if sub_cate in k:
                 total_correct += v["correct"]
                 total_answered += v["answered"]
-        eval_logger.info(f"Evaluation on Video Sub Categories: {sub_cate}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
+        # eval_logger.info(f"Evaluation on Video Sub Categories: {sub_cate}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
 
     for task_cate in TASK_CATEGORIES:
         total_correct = 0
@@ -314,12 +276,25 @@ def videomme_aggregate_results(results):
             if task_cate in k:
                 total_correct += v["correct"]
                 total_answered += v["answered"]
-        eval_logger.info(f"Evaluation on Task Categories: {task_cate}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
+        # eval_logger.info(f"Evaluation on Task Categories: {task_cate}: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
 
     total_correct = 0
     total_answered = 0
     for k, v in category2score.items():
         total_correct += v["correct"]
         total_answered += v["answered"]
-    eval_logger.info(f"Overall Performance: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
+    # eval_logger.info(f"Overall Performance: {100 * total_correct / total_answered if total_answered > 0 else 0 : .1f}%")
     return 100 * total_correct / total_answered if total_answered > 0 else 0
+
+
+
+if __name__ == "__main__":
+    import pandas as pd
+
+    # Load a Parquet file into a DataFrame
+    df = pd.read_parquet("/home/server08/yoonjeon_workspace/VideoPrefill/dataset/VideoMME/videomme/test-00000-of-00001.parquet")
+    # Display the first few rows
+    print(df.head())
+    breakpoint()
+    print(df.iloc[0].videoID)
+    
