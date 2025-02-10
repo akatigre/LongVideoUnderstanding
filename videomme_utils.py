@@ -1,17 +1,8 @@
-import datetime
-import json
+
 import os
 import re
-import sys
-from collections import defaultdict
-from pathlib import Path
-from typing import Dict, List, Optional, Union
-
 import cv2
 import numpy as np
-import yaml
-
-from file_utils import generate_submission_file
 
 VIDEO_TYPE = ["short", "medium", "long"]
 CATEGORIES = ["Knowledge", "Film & Television", "Sports Competition", "Artistic Performance", "Life Record", "Multilingual"]
@@ -71,7 +62,6 @@ def parse_subtitle_time(time_str):
     s, ms = s_ms.split(",")
     return int(h) * 3600 + int(m) * 60 + int(s) + int(ms) / 1000
 
-
 def load_subtitles(subtitle_path):
     subtitles = {}
     with open(subtitle_path, "r", encoding="utf-8") as file:
@@ -95,7 +85,6 @@ def convert_time_to_frame(time_in_seconds, fps):
 def extract_subtitles(video_path, subtitle_path):
     video = cv2.VideoCapture(video_path)
     fps = video.get(cv2.CAP_PROP_FPS)
-    total_frame = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
     subtitles = load_subtitles(subtitle_path)
 
     subtitle_frames = []
@@ -104,17 +93,17 @@ def extract_subtitles(video_path, subtitle_path):
         end_frame = convert_time_to_frame(end_time, fps)
         subtitle_frames.append((start_frame, end_frame, text))
 
-    return subtitle_frames, total_frame
+    return subtitle_frames
 
 
-def videomme_doc_to_text(doc, system_prompt=None):
+def videomme_doc_to_text(doc):
     option_prompt = "Select the best answer to the following multiple-choice question based on the video and the subtitles. Respond with only the letter (A, B, C, or D) of the correct option."
     question = doc["question"]
     option = "\n".join([f"{opt}" for i, opt in enumerate(doc["options"])])
     question = question + "\n" + option
     post_prompt = "The best answer is:"
     full_prompt = option_prompt + "\n" + question + "\n" + post_prompt
-    return system_prompt(full_prompt)
+    return full_prompt
 
 
 def videomme_doc_to_text_subtitle(doc, cache_dir, lmms_eval_specific_kwargs=None):

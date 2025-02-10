@@ -92,10 +92,13 @@ def write_or_append_json(file_path, new_data):
     with open(file_path, 'w') as f:
         json.dump(existing_data, f, indent=4)
         
-def evaluate_longvideobench(samples):
+def evaluate_longvideobench(samples, ids=None):
     pred_correct = 0
     judge_dict = dict()
     for sample in samples:
+        if ids is not None:
+            if sample["lvb_acc"]["id"] not in ids:
+                continue
         sample = sample["lvb_acc"]
         gold_i = sample["answer"]
         pred_i = sample["parsed_pred"]

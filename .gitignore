@@ -5,3 +5,4 @@ MMVU/**
 **/answers_*.json
 **/__pycache__/*
 **/lvb_answers/*
+examples/**

@@ -3,193 +3,93 @@ import argparse
 from qwen_vl_utils import process_vision_info       
 from transformers import AutoProcessor
 from homer.modeling_qwen2_5_vl import Qwen2_5_VLForConditionalGeneration
-from pathlib import Path
-import json
-import os
 from tqdm import tqdm
-from video_utils import load_video
+from longvideobench import LongVideoBenchDataset
+from lvb_utils import longvideobench_process_results, write_or_append_json
+from PIL import Image
 
-def eval_lvb(args):
-    from lvb_utils import longvideobench_doc_to_text, write_or_append_json, longvideobench_process_results
-    metadata_path = Path(args.data_path) / "LongVideoBench/lvb_val.json"
-    with open(metadata_path, "r") as f:
-        metadata = json.load(f)
-
-    json_name = f"log/LVB/{args.model_name}_{args.attn_type}_nframes_{args.max_frames_num}"
-    json_name += "_subtitle" if args.subtitle else ""
+def load_model(args):
     
-    if os.path.exists(json_name):
-        print(f"{json_name} already exists. Skipping evaluation.")
-        with open(json_name, "r") as f:
-            samples = json.load(f)
-        done_ids = [sample["lvb_acc"]["id"] for sample in samples]
-        metadata_ids = [sample["id"] for sample in metadata]
-        undone_ids = [id for id in metadata_ids if id not in done_ids]
-    else:   
-        undone_ids = [sample["id"] for sample in metadata]
-        
-    if len(undone_ids) > 0:
-        args.chunk_len = 128000 // args.scale
-        model, processor = load(args)
-        for meta in tqdm(metadata):
-            if meta["id"] not in undone_ids:
-                continue
-            
-            video_path = Path(args.data_path) / 'videos' / f"{meta['video_id']}.mp4"
-            frames, frame_timestamps = load_video(video_path, duration=meta["duration"], max_num_frames=args.max_frames_num)
-            
-            post_prompt = "Answer with the option's letter from the given choices directly.\n"
-            if subtitle:
-                subtitle_path = Path(args.data_path) / "subtitles" / meta["subtitle_path"]
-                with open(subtitle_path, "r") as f:
-                    subtitles = json.load(f)
-
-                interleaved_video_subtitles = insert_subtitles_into_frames(
-                    frames,
-                    frame_timestamps, 
-                    subtitles,
-                    meta["starting_timestamp_for_subtitles"],
-                    meta["duration"]
-                    )
-                question = meta["question"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-                return interleaved_video_subtitles, question, post_prompt
-            else:
-                question = meta["question_wo_referring_query"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-           
-            output_text1, output_text2 = generate_text(model, processor, interleaved_video_subtitles, question, post_prompt)
-            if output_text1 is None:
-                score_dict_orig = None
-            else:
-                score_dict_orig = longvideobench_process_results(meta, pred=output_text1[0])
-                write_or_append_json(f"{args.save_dir}/{json_name}.json", score_dict_orig)
-            score_dict_homer = longvideobench_process_results(meta, pred=output_text2[0])
-            write_or_append_json(f"{args.save_dir}/{json_name}_homer_chunklen_{args.chunk_len}.json", score_dict_homer)
-        
-        print(f"Evaluation done. Samples are saved in {json_name}")
-
-def eval_videomme(args):
-    import pandas as pd
-    from videomme_utils import TASK_CATEGORIES, SUB_CATEGORIES, videomme_doc_to_text_subtitle, videomme_doc_to_text
-    cache_dir = os.path.join(args.data_path, "VideoMME")
-    metadata_path = os.path.join(cache_dir, "test-00000-of-00001.parquet")
-    metadata = pd.read_parquet(metadata_path)
-    
-    json_name = f"log/VideoMME/{args.model_name}_{args.attn_type}_nframes_{args.max_frames_num}"
-    json_name += "_subtitle" if args.subtitle else ""
-    
-    if os.path.exists(json_name):
-        print(f"{json_name} already exists. Skipping evaluation.")
-        with open(json_name, "r") as f:
-            samples = json.load(f)
-        done_ids = [sample["question_id"] for sample in samples]
-        metadata_ids = [sample["question_id"] for sample in metadata]
-        undone_ids = [id for id in metadata_ids if id not in done_ids]
-    else:   
-        undone_ids = [sample["question_id"] for sample in metadata]
-        
-    if len(undone_ids) > 0:
-        args.chunk_len = 128000 // args.scale
-        model, processor = load(args)
-        
-        matrices = []
-        VIDEO_TYPE = ["long"]
-        CATEGORIES = ["Knowledge"]
-        for i in VIDEO_TYPE:
-            for j in CATEGORIES:
-                for k in SUB_CATEGORIES:
-                    for l in TASK_CATEGORIES:
-                        matrices.append(f"{i}_{j}_{k}_{l}")
-
-        for idx in tqdm(range(len(metadata))):
-            meta = metadata.iloc[idx]
-            if meta["question_id"] not in undone_ids:
-                continue
-            
-            if args.subtitle:
-                prompt = videomme_doc_to_text_subtitle(meta, cache_dir = cache_dir)
-            else:
-                prompt = videomme_doc_to_text(meta)
-            
-            frames, frame_timestamps = load_video(
-                os.path.join(cache_dir, "data", meta["videoID"] + ".mp4"), 
-                duration=meta["duration"], 
-                max_num_frames=args.max_frames_num
-                )
-            
-            post_prompt = "Answer with the option's letter from the given choices directly.\n"
-            if subtitle:
-                subtitle_path = Path(args.data_path) / "subtitles" / meta["subtitle_path"]
-                with open(subtitle_path, "r") as f:
-                    subtitles = json.load(f)
-
-                interleaved_video_subtitles = insert_subtitles_into_frames(
-                    frames,
-                    frame_timestamps, 
-                    subtitles,
-                    meta["starting_timestamp_for_subtitles"],
-                    meta["duration"]
-                    )
-                question = meta["question"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-                return interleaved_video_subtitles, question, post_prompt
-            else:
-                question = meta["question_wo_referring_query"] + "\n" + "\n".join([". ".join([chr(ord("A") + i), candidate]) for i, candidate in enumerate(candidates)])
-                return frames, question, post_prompt
-            output_text1, output_text2 = generate_text(model, processor, interleaved_video_subtitles, question, post_prompt)
-            if output_text1 is None:
-                score_dict_orig = None
-            else:
-                score_dict_orig = longvideobench_process_results(meta, pred=output_text1[0])
-                write_or_append_json(f"{args.save_dir}/{json_name}.json", score_dict_orig)
-            score_dict_homer = longvideobench_process_results(meta, pred=output_text2[0])
-            write_or_append_json(f"{args.save_dir}/{json_name}_homer_chunklen_{args.chunk_len}.json", score_dict_homer)
-        
-        print(f"Evaluation done. Samples are saved in {json_name}")
-
-
-def load(args):
-    homer_args = {
-            "max_chunk_len": args.chunk_len, # final chunk limit
-            "max_initial_chunk_len": args.max_initial_chunk_len,
-            "reduction_mode": "power_max_last_calibrated",
-            "layers_warmup": args.layer_warmup,
-            "target_len": args.chunk_len, # max_position_ids = 128000
-            "bias_path": args.bias_path,
-        }
     model_path = "Qwen/Qwen2.5-VL-7B-Instruct"
     model = Qwen2_5_VLForConditionalGeneration.from_pretrained(
         model_path,
         torch_dtype="auto", 
         device_map="auto",
         attn_implementation="flash_attention_2",
-        homer_args=homer_args,
     )
     
     model.eval()
     processor = AutoProcessor.from_pretrained(model_path)
     return model, processor
 
-@torch.no_grad()
-def generate_text(model, processor, list_of_pil_images, question, post_prompt, **video_kwargs):
-    list_of_content = [
-        {
-            "type": "video", 
-            "video": [ele for ele in list_of_pil_images],
-            # "max_pixels": 360 * 420
-        },
-        {
-            "type": "text",
-            "text": f"\n{question}\n{post_prompt}",
-        }
-    ]
-
+def debug(task_name="LongVideoBench"):
+    import os
+    if task_name == "LongVideoBench":
+        video_id = 'yn7oTvw8QRY'
+        question = """
+                There are two images here. One shows a girl in green clothing with braided hair, holding a clay container in front of a solid color background wall. 
+                The other shows a girl in black and white floral clothing with loose hair. According to the video, which character appears first?
+                """
+        subtitle_path = os.path.join("/home/server08/hdd1/yoonjeon_workspace/long_video_understanding/LongVideoBench/subtitles/", video_id+"_en.json")
+        video_path = os.path.join("/home/server08/hdd1/yoonjeon_workspace/long_video_understanding/LongVideoBench/videos/", video_id+".mp4")
+        options = [
+            "A. Boy with short hair and green stripes",
+            "B. Boy with golden hair",
+            "C. Girl in green clothing with loose hair",
+            "D. Girl in green clothing with braided hair",
+            "E. Girl in black and white floral clothing with loose hair"
+            ]
+        starting_timestep_for_subtitles = 0
+        # subtitle_path = None
+    elif task_name == "videomme":
+        video_id = "QTA8j5wSTx4"
+        question = "Why did the main character in the video put his hand in the coat?"
+        options = [ "A. Because his hand was deformed.", "B. For public image.", "C. Because such action can released stomach pain.", "D. For warmth." ]
+        answer = "B"
+        subtitle_path = os.path.join("/home/server08/.cache/huggingface/videomme", "subtitle", f"{video_id}.srt")
+        video_path = os.path.join("/home/server08/.cache/huggingface/videomme", "data", f"{video_id}.mp4")
+    images_path = os.path.join("/home/server08/yoonjeon_workspace/VideoPrefill/examples", video_id)
+    if not os.path.exists(images_path):
+        os.makedirs(images_path)
     
-    messages = [
-        {
-            "role": "user",
-            "content": list_of_content
-        },
-    ]
+    # for frame_idx, frame in enumerate(frames):
+    #     frame.save(os.path.join(images_path, f"{frame_idx:04d}.png"))
         
+def load_data(task_name="LongVideoBench", max_frame=100):
+    return
+    from video_utils import load_video
+    from videomme_utils import extract_subtitles
+    
+    if task_name == "LongVideoBench" and args.subtitle:
+        import json
+        from lvb_utils import insert_subtitles_into_frames
+        starting_timestep_for_subtitles = 0
+        with open(subtitle_path, "r") as f:
+            subtitles = json.load(f)
+        frame_timestamps = [subtitle["timestamp"] for subtitle in subtitles]
+        duration = frame_timestamps[-1]["end"]
+        interleaved_list = insert_subtitles_into_frames(frames, frame_timestamps, subtitles, starting_timestep_for_subtitles, duration)
+        
+    elif task_name == "videomme" and args.subtitle:
+        import re
+        from collections import defaultdict
+        subtitle_by_frame = extract_subtitles(video_path, subtitle_path)
+        sample_by = total_frames // max_frame
+        per_frame_subtitles = defaultdict(list)
+        for start, end, subt in subtitle_by_frame:
+            # start, end is the frame index ranging between 0 and total_frames - 1
+            start_scaled, end_scaled = start / sample_by, end / sample_by
+            pattern = r'<font color="white" size=".72c">(.*?)</font>'
+            raw_text = re.findall(pattern, subt) # clean text
+            per_frame_subtitles[int(start_scaled)].append(raw_text[0])
+            if int(start_scaled) != int(end_scaled):
+                per_frame_subtitles[int(end_scaled)].append(raw_text[0])
+    
+    return question, options, frames, subtitle_by_frame, total_frames, per_frame_subtitles
+
+@torch.no_grad()
+def generate_text(model, processor, messages, max_token):
+    
     # Preparation for inference
     text = processor.apply_chat_template(
         messages, tokenize=False, add_generation_prompt=True
@@ -207,91 +107,78 @@ def generate_text(model, processor, list_of_pil_images, question, post_prompt, *
     
     #! ORIGINAL Model
     inputs = inputs.to("cuda")
-    generated_ids = model.generate(**inputs.to("cuda"), max_new_tokens=128)
+    generated_ids = model.generate(**inputs, max_new_tokens=max_token)
     generated_ids_trimmed = [
         out_ids[len(in_ids) :] for in_ids, out_ids in zip(inputs.input_ids, generated_ids)
     ]
     output_text1 = processor.batch_decode(
         generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
     )
-    print(f"Original: {output_text1}")
-    
-    #! Reasoning globally: DEBUG
-    output_text1_reason = processor.batch_decode(
-        generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
-    )
-    print(f"Global Reasoning: {output_text1_reason}")
-    
+    torch.cuda.empty_cache()
     #! HOMER
-    vision_start_token_id = model.config.vision_start_token_id
-    start_idxs = (inputs.input_ids == vision_start_token_id).nonzero()[:]
-    vision_end_token_id = model.config.vision_end_token_id
-    end_idxs = (inputs.input_ids == vision_end_token_id).nonzero()[:]
+    from homer.merge import MergeManager
+    #################### MODIFIED FROM ORIGINAL CODE #####################
+    args.chunk_len = model.config.max_position_embeddings // args.scale
+    manager_settings = {
+            "max_chunk_len": args.chunk_len, # final chunk limit
+            "max_initial_chunk_len": args.max_initial_chunk_len,
+            "reduction_mode": "power_max_last_calibrated",
+            "layers_warmup": args.layer_warmup,
+            "target_len": args.chunk_len, # max_position_ids = 128000
+            "bias_path": args.bias_path,
+            "visualize": False,
+        }
+    model.merge_manager = MergeManager(**manager_settings)
 
-    # Preparation for inference
-    text = processor.apply_chat_template(
-        messages, tokenize=False, add_generation_prompt=True
-    )
-    image_inputs, video_inputs, video_kwargs = process_vision_info(messages, return_video_kwargs=True)
-    inputs = processor(
-        text=[text],
-        images=image_inputs,
-        videos=video_inputs,
-        padding=True,
-        return_tensors="pt",
-        **video_kwargs,
-    )
-    prefix_ids = inputs.input_ids[:, :start_idxs[0][1]]
-    context_ids = inputs.input_ids[:, start_idxs[0][1]:end_idxs[-1][1] + 1]
-    suffix_ids = inputs.input_ids[:, end_idxs[-1][1] + 1:]
+    for idx, layer in enumerate(model.model.layers):
+        layer.layer_idx = idx
+        layer.merge_manager = model.merge_manager
+    ######################################################################
     homer_prefix = model.create_homer_prefix(
-        prefix_ids, context_ids, suffix_ids,
-        pixel_values=inputs["pixel_values"],
-        image_grid_thw=inputs["image_grid_thw"],
-        attention_mask = inputs["attention_mask"], # 1213 ~ 2408
+        input_ids = inputs['input_ids'],
+        pixel_values=inputs["pixel_values_videos"],
+        grid_thw=inputs["video_grid_thw"],
+        vision_start_token_id = model.config.vision_start_token_id,
+        vision_end_token_id = model.config.vision_end_token_id,
     )
     torch.cuda.empty_cache()
-    generated_ids, seq_len = model.generate(homer_prefix, max_new_tokens=128)
+    generated_ids, seq_len = model.generate(homer_prefix, max_new_tokens=max_token)
     generated_ids_trimmed = generated_ids[0][seq_len-1 :]
     output_text2 = processor.batch_decode(
         [generated_ids_trimmed], skip_special_tokens=True, clean_up_tokenization_spaces=False
     )
-    print(f"Homer: {output_text2}")
+    return output_text1, output_text2
     
-    #! Reasoning per Chunk
 
+def make_video(max_frame, video_frames, per_frame_subtitles, subtitle_by_frame):
     
-    #! MINFERENCE
-    # import os
-    # from minference import MInference
-    # BASE_DIR = "./MInference/minference/configs/"
-    # config_path = os.path.join(
-    #     BASE_DIR, "Qwen2_7B_Instruct_128k_instruct_kv_out_v32_fit_o_best_pattern.json"
-    # )
-    # minference_patch = MInference("minference", model_path, config_path=config_path, kv_cache_cpu=True,) # 
-    # model = minference_patch(model)
-    # generated_ids = model.generate(homer_prefix = None, max_new_tokens=128, **inputs)
-    # generated_ids_trimmed = generated_ids[0][inputs.input_ids.shape[1] :]
-    # output_text = processor.batch_decode(
-    #     [generated_ids_trimmed], skip_special_tokens=True, clean_up_tokenization_spaces=False
-    # )
-    # print(output_text)
-    
-    #! MINFERENCE + HOMER
-    # generated_ids, seq_len = model.generate(homer_prefix, max_new_tokens=128) # homer_prefix should be the same format with inputs = processor()
-    # generated_ids_trimmed = generated_ids[0][seq_len - 1 :]
-    # output_text = processor.batch_decode(
-    #     [generated_ids_trimmed], skip_special_tokens=True, clean_up_tokenization_spaces=False
-    # )
-    # print(output_text)
-
+    from video_utils import save_video_from_pil
+    from PIL import ImageDraw, ImageFont
+    subtitle_images = []
+    for frame_idx in range(max_frame):
+        frame = video_frames[frame_idx]
+        if subtitle_by_frame is not None:
+            image_width, image_height = frame.size
+            draw = ImageDraw.Draw(frame)
+            font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 30) 
+            
+            text = "\n".join(per_frame_subtitles[frame_idx])
+            bbox = draw.textbbox(xy=(0, 0), text=text, font=font)
+            text_width, text_height = bbox[2] - bbox[0], bbox[3] - bbox[1]
+            x = (image_width - text_width) / 2
+            y = image_height - text_height - 10  # 10 pixels from the bottom
+            draw.text((x, y), text, font=font, fill="white")
+        subtitle_images.append(frame)
+    video_path = f"examples/video_frames{max_frame}.mp4"
+    save_video_from_pil(subtitle_images, video_path, fps=1)
+        
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--scale", type=int, default=5)
     parser.add_argument("--model-path", type=str, default="Qwen/Qwen2-VL-7B-Instruct")
     parser.add_argument("--video-path", type=str, default="examples/dc_demo.mp4")
     parser.add_argument("--text", type=str, default="What is the video about?")
-    parser.add_argument("--max-frames-num", type=int, default=100)
+    parser.add_argument("--fps", type=float, default=1)
     parser.add_argument("--subtitle", action="store_true")
     parser.add_argument("--device-map", type=str, default="auto")
     parser.add_argument(
@@ -301,7 +188,11 @@ if __name__ == "__main__":
         choices=["plain", "yarn", "homer", "homer_yarn"],
     )
     parser.add_argument("--model_path", type=str, default="")
-    parser.add_argument("--data_path", type=str, default="./dataset/")
+    parser.add_argument("--task_name", type=str, default="LongVideoBench", choices=["LongVideoBench", "videomme"])
+    parser.add_argument("--data_path", type=str, default="/home/server08/.cache/huggingface/hub/")
+    parser.add_argument("--num_frames_per_chunk", type=int, default=16)
+    parser.add_argument("--reason", action="store_true")
+    parser.add_argument("--visualize", action="store_true")
     # HOMER arguments
     parser.add_argument("--max_initial_chunk_len", type=int, default=-1)
     parser.add_argument("--layer_warmup", type=int, default=12)
@@ -312,8 +203,75 @@ if __name__ == "__main__":
 
     args.model_name = "qwen2-5-vl"
     args.attn_type = "dense"
-    # eval(args)
 
-    eval_videomme(args)
-    # test(args)
+    model, processor = load_model(args)
     
+    if args.task_name == "LongVideoBench":
+        
+        data_path = "/home/server08/.cache/huggingface/longvideobench/"
+        dataset = LongVideoBenchDataset(data_path, "lvb_val.json", target_fps=args.fps)
+        failure_list = []
+        save_dir = "./logs/LVB"
+        json_name = f"qwen2-5-vl_fps{args.fps}"
+        for data in tqdm(iter(dataset)):
+            inputs = data["inputs"] # list of interleaved pil images and subtitles, followed by question and options
+            suffix = '\n'.join(inputs[-6:])
+            context = inputs[:-6]
+            
+            list_of_content = []
+            #! Chunk context into multiple clips
+            per_clip_frames = 0
+            clip, subtitle = [], []
+            if args.subtitle:
+                for inp in context:
+                    if isinstance(inp, Image.Image):
+                        per_clip_frames += 1
+                        clip.append(inp)
+                        list_of_content.append({
+                            "type": "video",
+                            "video": [inp]
+                        })
+                    elif isinstance(inp, str):
+                        subtitle.append(inp)
+            else:
+                list_of_content = [{
+                    "type": "video",
+                    "video": [inp for inp in context if isinstance(inp, Image.Image)]
+                }]
+                    
+            #! Add question and options
+            if args.reason:
+                suffix = '\n'.join(inputs[-5:])
+                list_of_content += [
+                    {
+                        "type": "text",
+                        "text": f"Reason about the thinking process to answer. Does the following video contain the answer for {inputs[-6]}? {suffix}."
+                    }
+                ]
+                max_token = 128
+            else:
+                list_of_content += [
+                    {
+                        "type": "text",
+                        "text": suffix
+                    }
+                ]
+                max_token = 32
+
+            messages = [
+                {
+                    "role": "user",
+                    "content": list_of_content
+                },
+            ]
+            
+            try:
+                output1, output2 = generate_text(model, processor, messages, max_token)
+            except:
+                failure_list.append(data['id'])
+            score_dict_orig = longvideobench_process_results(data, pred=output1[0])
+            write_or_append_json(f"{save_dir}/{json_name}.json", score_dict_orig)
+            score_dict_homer = longvideobench_process_results(data, pred=output2[0])
+            write_or_append_json(f"{save_dir}/{json_name}_homer_chunklen_{args.chunk_len}.json", score_dict_homer)
+        
+        print(f"Evaluation done. Samples are saved in {json_name}")

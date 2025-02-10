@@ -364,15 +364,14 @@ class Chunk:
         context_ids,
         suffix_ids,
         num_chunks,
-        eff_chunk_len,
         image_embeds,
         get_rope_index,
-        end_token_id,
+        video_grid_thw,
         image_grid_thw=None,
-        video_grid_thw=None,
         visualize=False,
         attention_mask=None,
         ):
+        
         assert context_ids is not None, "Context input IDs must be provided"
         device = context_ids.device
 
@@ -380,7 +379,9 @@ class Chunk:
         
         ############# MODIFIED FROM ORIGINAL CODE #############
         bsz = prefix_ids.size(0)
-        img_end_pos = (context_ids == end_token_id).nonzero()[:, 1]
+        per_frame_len = video_grid_thw[0][1:].prod() / 4
+        # img_end_pos = (context_ids == end_token_id).nonzero()[:, 1] 
+        img_end_pos = torch.arange(per_frame_len, full_context_len, per_frame_len)
         optimal_chunk_pos = torch.arange(full_context_len // num_chunks, full_context_len, full_context_len // num_chunks)
         closest_positions = []
         closest_frame_idx = []
@@ -395,13 +396,12 @@ class Chunk:
         suffix_len = suffix_ids.size(1) if suffix_ids is not None else 0
         chunks = []
         
-        
         for i in range(num_chunks):
             ############# MODIFIED FROM ORIGINAL CODE #############
-            start_t = 0 if i == 0 else closest_positions[i - 1]
-            end_t = closest_positions[i] if i != num_chunks - 1 else full_context_len
-            start_frame = 0 if i == 0 else closest_frame_idx[i - 1]
-            end_frame = closest_frame_idx[i] if i != num_chunks - 1 else image_embeds.shape[0]
+            start_t = 0 if i == 0 else int(closest_positions[i - 1])
+            end_t = int(closest_positions[i]) if i != num_chunks - 1 else full_context_len
+            start_frame = 0 if i == 0 else int(closest_frame_idx[i - 1])
+            end_frame = int(closest_frame_idx[i]) if i != num_chunks - 1 else image_embeds.shape[0]
             context_len = end_t - start_t
             chunk_context_ids = context_ids[:, start_t : end_t]
             input_image_embeds = image_embeds[start_frame:end_frame].reshape(bsz, -1, image_embeds.size(-1))
@@ -420,10 +420,11 @@ class Chunk:
                 ],
                 dim=1,
             )
-
             # calculate RoPE index once per generation in the pre-fill stage only
+            video_grid_chunk = video_grid_thw.clone()
+            video_grid_chunk[0][0] = end_frame - start_frame
             position_ids, rope_deltas = get_rope_index(
-                    input_ids, image_grid_thw, video_grid_thw, attention_mask=None
+                    input_ids, image_grid_thw, video_grid_chunk, attention_mask=None
                 ) # 3, 1, 1371
             
             if num_chunks > 1:
@@ -460,6 +461,7 @@ class Chunk:
                 visualize=visualize,
             )
             chunks.append(chunk)
+        
         
         # Fill None to match power of 2
         num_full_chunks = 2 ** math.ceil(math.log2(num_chunks))

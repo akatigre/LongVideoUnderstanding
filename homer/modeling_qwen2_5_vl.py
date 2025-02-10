@@ -1615,7 +1615,7 @@ QWEN2_5_VL_INPUTS_DOCSTRING = r"""
             The tensors corresponding to the input videos. Pixel values can be obtained using
             [`AutoImageProcessor`]. See [`Qwen2_5_VLImageProcessor.__call__`] for details. [`Qwen2_5_VLProcessor`] uses
             [`Qwen2_5_VLImageProcessor`] for processing videos.
-        image_grid_thw (`torch.LongTensor` of shape `(num_images, 3)`, *optional*):
+        grid_thw (`torch.LongTensor` of shape `(num_images, 3)`, *optional*):
             The temporal, height and width of feature shape of each image in LLM.
         video_grid_thw (`torch.LongTensor` of shape `(num_videos, 3)`, *optional*):
             The temporal, height and width of feature shape of each video in LLM.
@@ -1636,33 +1636,6 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         self.vocab_size = config.vocab_size
         self.lm_head = nn.Linear(config.hidden_size, config.vocab_size, bias=False)
         self.rope_deltas = None  # cache rope_deltas here
-
-        #################### MODIFIED FROM ORIGINAL CODE #####################
-
-        if homer_args is not None:
-            manager_settings = {
-                "max_chunk_len": 2048,
-                "max_initial_chunk_len": -1,
-                "reduction_mode": "power_max_last_calibrated",
-                "layers_warmup": 12,
-                "target_len": 2048,
-                "bias_path": None,
-                "visualize": False,
-            }
-
-            # Sanity check for Homer arguments
-            for k in homer_args:
-                assert k in manager_settings, f"Unknown argument: {k}"
-
-            manager_settings.update(homer_args)
-
-            self.merge_manager = MergeManager(**manager_settings)
-
-            for idx, layer in enumerate(self.model.layers):
-                layer.layer_idx = idx
-                layer.merge_manager = self.merge_manager
-
-        ######################################################################
         
         # Initialize weights and apply final processing
         self.post_init()
@@ -1688,7 +1661,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
     def get_rope_index(
         self,
         input_ids: Optional[torch.LongTensor] = None,
-        image_grid_thw: Optional[torch.LongTensor] = None,
+        grid_thw: Optional[torch.LongTensor] = None,
         video_grid_thw: Optional[torch.LongTensor] = None,
         second_per_grid_ts: Optional[torch.Tensor] = None,
         attention_mask: Optional[torch.Tensor] = None,
@@ -1730,7 +1703,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
             input_ids (`torch.LongTensor` of shape `(batch_size, sequence_length)`):
                 Indices of input sequence tokens in the vocabulary. Padding will be ignored by default should you provide
                 it.
-            image_grid_thw (`torch.LongTensor` of shape `(num_images, 3)`, *optional*):
+            grid_thw (`torch.LongTensor` of shape `(num_images, 3)`, *optional*):
                 The temporal, height and width of feature shape of each image in LLM.
             video_grid_thw (`torch.LongTensor` of shape `(num_videos, 3)`, *optional*):
                 The temporal, height and width of feature shape of each video in LLM.
@@ -1751,7 +1724,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         video_token_id = self.config.video_token_id
         vision_start_token_id = self.config.vision_start_token_id
         mrope_position_deltas = []
-        if input_ids is not None and (image_grid_thw is not None or video_grid_thw is not None):
+        if input_ids is not None and (grid_thw is not None or video_grid_thw is not None):
             total_input_ids = input_ids
             if attention_mask is None:
                 attention_mask = torch.ones_like(total_input_ids)
@@ -1786,9 +1759,9 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
                         ed_video = len(input_tokens) + 1
                     if ed_image < ed_video:
                         t, h, w = (
-                            image_grid_thw[image_index][0],
-                            image_grid_thw[image_index][1],
-                            image_grid_thw[image_index][2],
+                            grid_thw[image_index][0],
+                            grid_thw[image_index][1],
+                            grid_thw[image_index][2],
                         )
                         second_per_grid_t = 0
                         image_index += 1
@@ -1878,7 +1851,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         return_dict: Optional[bool] = None,
         pixel_values: Optional[torch.Tensor] = None,
         pixel_values_videos: Optional[torch.FloatTensor] = None,
-        image_grid_thw: Optional[torch.LongTensor] = None,
+        grid_thw: Optional[torch.LongTensor] = None,
         video_grid_thw: Optional[torch.LongTensor] = None,
         rope_deltas: Optional[torch.LongTensor] = None,
         cache_position: Optional[torch.LongTensor] = None,
@@ -1937,7 +1910,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
             inputs_embeds = self.model.embed_tokens(input_ids)
             if pixel_values is not None:
                 pixel_values = pixel_values.type(self.visual.dtype)
-                image_embeds = self.visual(pixel_values, grid_thw=image_grid_thw)
+                image_embeds = self.visual(pixel_values, grid_thw=grid_thw)
                 n_image_tokens = (input_ids == self.config.image_token_id).sum().item()
                 n_image_features = image_embeds.shape[0]
                 if n_image_tokens != n_image_features:
@@ -1980,7 +1953,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
             if (cache_position is not None and cache_position[0] == 0) or self.rope_deltas is None:
                 position_ids, rope_deltas = self.get_rope_index(
                     input_ids,
-                    image_grid_thw,
+                    grid_thw,
                     video_grid_thw,
                     second_per_grid_ts,
                     attention_mask,
@@ -2070,7 +2043,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         use_cache=True,
         pixel_values=None,
         pixel_values_videos=None,
-        image_grid_thw=None,
+        grid_thw=None,
         video_grid_thw=None,
         second_per_grid_ts=None,
         **kwargs,
@@ -2138,7 +2111,7 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
                 "attention_mask": attention_mask,
                 "pixel_values": pixel_values,
                 "pixel_values_videos": pixel_values_videos,
-                "image_grid_thw": image_grid_thw,
+                "grid_thw": grid_thw,
                 "video_grid_thw": video_grid_thw,
                 "cache_position": cache_position,
                 "second_per_grid_ts": second_per_grid_ts,
@@ -2269,14 +2242,14 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         input_ids = input_ids.view(-1, seq_length)
         inputs_embeds = self.model.embed_tokens(input_ids.to(self.device))
         ######################## MODIFIED FROM ORIGINAL CODE ########################
-        n_image_tokens = (input_ids == self.config.image_token_id).sum().item()
+        n_image_tokens = (input_ids == self.config.video_token_id).sum().item()
         n_image_features = image_embeds.shape[0]
         if n_image_tokens != n_image_features:
             raise ValueError(
                 f"Image features and image tokens do not match: tokens: {n_image_tokens}, features {n_image_features}"
             )
 
-        mask = input_ids == self.config.image_token_id
+        mask = input_ids == self.config.video_token_id
         mask_unsqueezed = mask.unsqueeze(-1)
         mask_expanded = mask_unsqueezed.expand_as(inputs_embeds)
         image_mask = mask_expanded.to(inputs_embeds.device)
@@ -2349,7 +2322,9 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
 
         num_chunks = len(chunks)
         is_leaf = num_chunks == 1
-
+        # 6 -> lev 3
+        # 3 -> lev 2
+        # 2 -> lev 1 vs 1 -> lev 0
         # Leaf node: Merge tokens to be size 1/2 with (layers_per_chunk + layers_leftover) layers
         if is_leaf:
             assert height == 0
@@ -2412,32 +2387,27 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
 
     # Class method for LlamaForCausalLM
     def create_homer_prefix(self, 
-                            prefix_ids, 
-                            context_ids, 
-                            suffix_ids, 
+                            input_ids,
                             pixel_values, 
-                            image_grid_thw,
-                            attention_mask,
+                            grid_thw,
+                            vision_start_token_id,
+                            vision_end_token_id,
                             ):
-        assert prefix_ids is not None
-        assert context_ids is not None
-        assert suffix_ids is not None
-        assert pixel_values is not None
-        assert image_grid_thw is not None
-        assert attention_mask is not None
-        # from transformers.models.qwen2_vl.modeling_qwen2_vl import Qwen2VLForConditionalGeneration
-        prefix_len = prefix_ids.size(1)
-        context_len = context_ids.size(1)
-        suffix_len = suffix_ids.size(1)
-
-        total_len = prefix_len + suffix_len + context_len
-
-        assert suffix_len > 0, "Suffix length must be greater than 0"
-
-        # Compute "effective" chunk lengths (lengths without affix)
-        eff_max_chunk_len = self.merge_manager.max_chunk_len - (prefix_len + suffix_len)
 
         # Derive a merging schedule
+        start_idxs = (input_ids == vision_start_token_id).nonzero()[:]
+        end_idxs = (input_ids == vision_end_token_id).nonzero()[:]
+        context_ids = input_ids[:, start_idxs[0][1] : end_idxs[-1][1] + 1]
+        prefix_ids = input_ids[:, :start_idxs[0][1]]
+        suffix_ids = input_ids[:, end_idxs[-1][1] + 1:]
+        
+        prefix_len = prefix_ids.shape[1]
+        suffix_len = suffix_ids.shape[1]
+        context_len = context_ids.shape[1]
+        total_len = prefix_len + suffix_len + context_len
+        
+        # Compute "effective" chunk lengths (lengths without affix)
+        eff_max_chunk_len = self.merge_manager.max_chunk_len - (prefix_len + suffix_len)
         num_merging_layers = len(self.model.layers) - self.merge_manager.layers_warmup
         if self.merge_manager.max_initial_chunk_len > 0:
             eff_max_initial_chunk_len = self.merge_manager.max_initial_chunk_len - (
@@ -2452,7 +2422,6 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         num_chunks = (
             2 ** tree_height
         )
-        
         layers_per_chunk = math.floor(num_merging_layers / (tree_height + 1))
         layers_leftover = num_merging_layers - layers_per_chunk * (tree_height + 1) 
 
@@ -2466,18 +2435,11 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
         ############# MODIFIED FROM ORIGINAL CODE #############
         pixel_values = pixel_values.type(self.visual.get_dtype())
         #! batchify
-        image_embeds = []
-        for i in range(0, image_grid_thw.shape[0], 100):
-            grid = image_grid_thw[i:i+100]
-            pixels = pixel_values[i * grid[0].prod():(i+100) * grid[0].prod()]
-            image_embeds.append(self.visual(pixels.to(self.device), grid_thw = grid.to(self.device))) # t x h // merge_size x w // merge_size, h_dim
-        image_embeds = torch.cat(image_embeds, dim=0)
-        image_embeds = image_embeds.to(context_ids.device)
+        image_embeds = self.visual(pixel_values.to(self.device), grid_thw = grid_thw.to(self.device)).to("cpu")
         torch.cuda.empty_cache()
         spatial_merge_size = self.config.vision_config.spatial_merge_size
-        t, h, w = len(image_grid_thw), int(image_grid_thw[0][1] / spatial_merge_size), int(image_grid_thw[0][2] / spatial_merge_size)
+        t, h, w = grid_thw[0][0], int(grid_thw[0][1] / spatial_merge_size), int(grid_thw[0][2] / spatial_merge_size)
         eff_chunk_len = math.ceil(context_len / num_chunks)
-        
         #######################################################
         
         chunks = Chunk.make_chunks(
@@ -2485,11 +2447,10 @@ class Qwen2_5_VLForConditionalGeneration(Qwen2_5_VLPreTrainedModel, GenerationMi
             context_ids,
             suffix_ids,
             num_chunks=num_chunks,
-            eff_chunk_len=eff_chunk_len,
             visualize=self.merge_manager.visualize,
-            image_embeds=rearrange(image_embeds, "(t h w) c -> t h w c", t=len(image_grid_thw), h=h, w=w), # t x h x w, 3584
+            image_embeds=rearrange(image_embeds, "(t h w) c -> t h w c", t=t, h=h, w=w), # t x h x w, 3584
             get_rope_index=self.get_rope_index,
-            end_token_id=self.config.vision_end_token_id,
+            video_grid_thw=grid_thw,
         ) # list of prefix + partial context + suffix
 
         final_target_len = min(self.merge_manager.target_len, total_len)
