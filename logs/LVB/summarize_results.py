@@ -6,13 +6,41 @@ from glob import glob
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.abspath(os.path.join(current_dir, "..", ".."))
 sys.path.insert(0, parent_dir)
-from lvb_utils import evaluate_longvideobench
+from lvb_utils import evaluate_longvideobench, eval_multi_choice
 
 def process_answers(attn_json, list_ids=None):
     with open(attn_json, "r") as f:
         samples = json.load(f)
     judge_dict, acc = evaluate_longvideobench(samples, list_ids)
     return judge_dict, acc, len(judge_dict)
+
+def summarize_results(results_dir):
+    answers = sorted(glob(os.path.join(os.path.dirname(__file__), "answers_qwen2-5*.json")))
+    for answer in answers:
+        judge_dict, acc, num_samples = process_answers(answer)
+        print(f"------------{answer}------------")
+        print(f"Num {num_samples}: {acc}")
+        
+def compare_correct_wrong(samplesA, samplesB, list_ids=None):
+    
+    # judge_dict, acc = evaluate_longvideobench(samples, list_ids)
+    pred_correct = 0
+    judge_dict = dict()
+    for sampleA, sampleB in zip(samplesA, samplesB):
+        # if list_ids is not None:
+        #     if sampleA["lvb_acc"]["id"] not in list_ids:
+        #         continue
+        assert sampleA["lvb_acc"]["id"] == sampleB["lvb_acc"]["id"]
+        gold_i = sampleA["lvb_acc"]["answer"]
+        pred_i_A = sampleA["lvb_acc"]["parsed_pred"]
+        pred_i_B = sampleB["lvb_acc"]["parsed_pred"]
+        correctA = eval_multi_choice(gold_i, pred_i_A)
+        correctB = eval_multi_choice(gold_i, pred_i_B)
+        if correctA != correctB:
+            print(f"------------{sampleA['lvb_acc']['id']}------------")
+            print(f"Correct: {correctA}, {correctB}")
+            print(f"Pred: {pred_i_A}, {pred_i_B}")
+        
 
 def summarize_results(results_dir):
     answers = sorted(glob(os.path.join(os.path.dirname(__file__), "answers_qwen2-5*.json")))
@@ -43,6 +71,6 @@ def compare_two_results(results_dir1, results_dir2):
 
 if __name__ == "__main__":
     compare_two_results(
-        "/home/server08/yoonjeon_workspace/VideoPrefill/logs/LVB/qwen2-5-vl_dense_nframes_100_homer_chunklen_25600.json",
-        "/home/server08/yoonjeon_workspace/VideoPrefill/logs/LVB/qwen2-5-vl_dense_nframes_100.json"
+        "/home/server08/yoonjeon_workspace/VideoPrefill/logs/LVB/qwen2-5-vl_fps0.5.json",
+        "/home/server08/yoonjeon_workspace/VideoPrefill/logs/LVB/qwen2-5-vl_fps0.5_homer_chunklen_3200.json"
         )

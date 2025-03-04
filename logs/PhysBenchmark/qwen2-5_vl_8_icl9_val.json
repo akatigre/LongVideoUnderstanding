@@ -1,0 +1,1202 @@
+[
+    {
+        "idx": 0,
+        "answer": [
+            "A"
+        ]
+    },
+    {
+        "idx": 1,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 2,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 6,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7,
+        "answer": [
+            "A. Increases"
+        ]
+    },
+    {
+        "idx": 8,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 13,
+        "answer": [
+            "D. blue cube"
+        ]
+    },
+    {
+        "idx": 14,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 20,
+        "answer": [
+            "D. light blue cube"
+        ]
+    },
+    {
+        "idx": 22,
+        "answer": [
+            "D. orange cube"
+        ]
+    },
+    {
+        "idx": 23,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 24,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 25,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 26,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 40,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 56,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 57,
+        "answer": [
+            "A. yellow cube"
+        ]
+    },
+    {
+        "idx": 97,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 103,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 105,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 130,
+        "answer": [
+            "D. Point D"
+        ]
+    },
+    {
+        "idx": 133,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 134,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 203,
+        "answer": [
+            "A. Decreased"
+        ]
+    },
+    {
+        "idx": 204,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 205,
+        "answer": [
+            "A. Decreased"
+        ]
+    },
+    {
+        "idx": 206,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 207,
+        "answer": [
+            "A. Decreased"
+        ]
+    },
+    {
+        "idx": 209,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 210,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 211,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 212,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 243,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 244,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 245,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 246,
+        "answer": [
+            "B. Increased air pressure"
+        ]
+    },
+    {
+        "idx": 253,
+        "answer": [
+            "C. Increased humidity"
+        ]
+    },
+    {
+        "idx": 254,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 263,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 272,
+        "answer": [
+            "A."
+        ]
+    },
+    {
+        "idx": 347,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 348,
+        "answer": [
+            "D. It remains uncertain"
+        ]
+    },
+    {
+        "idx": 353,
+        "answer": [
+            "D. Cannot answer"
+        ]
+    },
+    {
+        "idx": 354,
+        "answer": [
+            "D. It is uncertain"
+        ]
+    },
+    {
+        "idx": 355,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 381,
+        "answer": [
+            "A. Yes"
+        ]
+    },
+    {
+        "idx": 382,
+        "answer": [
+            "D. None of the above"
+        ]
+    },
+    {
+        "idx": 383,
+        "answer": [
+            "D. Uncertain"
+        ]
+    },
+    {
+        "idx": 384,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 385,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 386,
+        "answer": [
+            "D. Remove both the white and green floating walls"
+        ]
+    },
+    {
+        "idx": 767,
+        "answer": [
+            "D. Collapsed"
+        ]
+    },
+    {
+        "idx": 768,
+        "answer": [
+            "A. It collides"
+        ]
+    },
+    {
+        "idx": 770,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 771,
+        "answer": [
+            "A. It touches the purple plate."
+        ]
+    },
+    {
+        "idx": 990,
+        "answer": [
+            "A. Point A is nearest"
+        ]
+    },
+    {
+        "idx": 991,
+        "answer": [
+            "C. Point C is nearest"
+        ]
+    },
+    {
+        "idx": 992,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 993,
+        "answer": [
+            "C. Point C is nearest"
+        ]
+    },
+    {
+        "idx": 994,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 995,
+        "answer": [
+            "A. Point A is nearest"
+        ]
+    },
+    {
+        "idx": 1011,
+        "answer": [
+            "C. Point C is closest"
+        ]
+    },
+    {
+        "idx": 1054,
+        "answer": [
+            "D. Point D"
+        ]
+    },
+    {
+        "idx": 1176,
+        "answer": [
+            "A. Black"
+        ]
+    },
+    {
+        "idx": 1183,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 1193,
+        "answer": [
+            "B. The ping-pong ball is smaller"
+        ]
+    },
+    {
+        "idx": 1207,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 1208,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 1209,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 1210,
+        "answer": [
+            "D. The camera is closer to the objects"
+        ]
+    },
+    {
+        "idx": 1211,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 1455,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1456,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 1457,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1458,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1459,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1460,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 1469,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 1470,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 1471,
+        "answer": [
+            "A"
+        ]
+    },
+    {
+        "idx": 1472,
+        "answer": [
+            "A."
+        ]
+    },
+    {
+        "idx": 1473,
+        "answer": [
+            "A"
+        ]
+    },
+    {
+        "idx": 1474,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1475,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1565,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1580,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 1582,
+        "answer": [
+            "B. 3"
+        ]
+    },
+    {
+        "idx": 1583,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 1584,
+        "answer": [
+            "A."
+        ]
+    },
+    {
+        "idx": 1585,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 1735,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 1796,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 1874,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 1875,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 1947,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 1948,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 3253,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 3254,
+        "answer": [
+            "A. It's just that the light source is stronger and the light source position remains the same"
+        ]
+    },
+    {
+        "idx": 3422,
+        "answer": [
+            "A. Point A"
+        ]
+    },
+    {
+        "idx": 3423,
+        "answer": [
+            "B. Point B"
+        ]
+    },
+    {
+        "idx": 3424,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 3425,
+        "answer": [
+            "B. Point B"
+        ]
+    },
+    {
+        "idx": 3426,
+        "answer": [
+            "B. Point B"
+        ]
+    },
+    {
+        "idx": 3427,
+        "answer": [
+            "D. Point D"
+        ]
+    },
+    {
+        "idx": 3437,
+        "answer": [
+            "B. Point B"
+        ]
+    },
+    {
+        "idx": 3909,
+        "answer": [
+            "A"
+        ]
+    },
+    {
+        "idx": 3910,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 4315,
+        "answer": [
+            "A"
+        ]
+    },
+    {
+        "idx": 4331,
+        "answer": [
+            "A"
+        ]
+    },
+    {
+        "idx": 4907,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 4972,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 6242,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 6940,
+        "answer": [
+            "B. The color of the light changes from orange to blue"
+        ]
+    },
+    {
+        "idx": 7114,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7115,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7338,
+        "answer": [
+            "C. Simple harmonic"
+        ]
+    },
+    {
+        "idx": 7358,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7359,
+        "answer": [
+            "A. The paper burned."
+        ]
+    },
+    {
+        "idx": 7368,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7410,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7414,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7454,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7455,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7491,
+        "answer": [
+            "A. A larger slice will be more effective"
+        ]
+    },
+    {
+        "idx": 7493,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 7494,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7503,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7512,
+        "answer": [
+            "A."
+        ]
+    },
+    {
+        "idx": 7513,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7522,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7523,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7524,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 7530,
+        "answer": [
+            "A. Smaller than the drawing"
+        ]
+    },
+    {
+        "idx": 7534,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7535,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 7536,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7545,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 7555,
+        "answer": [
+            "A. Much smaller"
+        ]
+    },
+    {
+        "idx": 7596,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7597,
+        "answer": [
+            "B. The lemon juice"
+        ]
+    },
+    {
+        "idx": 7641,
+        "answer": [
+            "A. In front of the mirror"
+        ]
+    },
+    {
+        "idx": 7665,
+        "answer": [
+            "B. Exposure to dry ice"
+        ]
+    },
+    {
+        "idx": 7666,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7682,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7688,
+        "answer": [
+            "A. The solution remains clear with no crystal formation."
+        ]
+    },
+    {
+        "idx": 7689,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7698,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 7699,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7711,
+        "answer": [
+            "C. Thin film interference"
+        ]
+    },
+    {
+        "idx": 7712,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 7754,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 7755,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7772,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7773,
+        "answer": [
+            "B. It acts as a condensation nucleus."
+        ]
+    },
+    {
+        "idx": 7787,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 7788,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 7798,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 7799,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 8047,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 8048,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 8069,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 8072,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 8085,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 8086,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 8506,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 8551,
+        "answer": [
+            "B. Decreasing"
+        ]
+    },
+    {
+        "idx": 8552,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 8553,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 8555,
+        "answer": [
+            "B. Decreasing"
+        ]
+    },
+    {
+        "idx": 8556,
+        "answer": [
+            "A. Decreasing"
+        ]
+    },
+    {
+        "idx": 8557,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 8558,
+        "answer": [
+            "D. Decreasing"
+        ]
+    },
+    {
+        "idx": 8559,
+        "answer": [
+            "B"
+        ]
+    },
+    {
+        "idx": 8560,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 8615,
+        "answer": [
+            "A. Focus length remains unchanged"
+        ]
+    },
+    {
+        "idx": 8653,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 8662,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 8675,
+        "answer": [
+            "B. Point B"
+        ]
+    },
+    {
+        "idx": 8679,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 8701,
+        "answer": [
+            "C. Point C"
+        ]
+    },
+    {
+        "idx": 8707,
+        "answer": [
+            "D. Point D"
+        ]
+    },
+    {
+        "idx": 8712,
+        "answer": [
+            "D. Point D"
+        ]
+    },
+    {
+        "idx": 8788,
+        "answer": [
+            "B. Point B"
+        ]
+    },
+    {
+        "idx": 9123,
+        "answer": [
+            "C"
+        ]
+    },
+    {
+        "idx": 9124,
+        "answer": [
+            "D"
+        ]
+    },
+    {
+        "idx": 9125,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 9126,
+        "answer": [
+            "A."
+        ]
+    },
+    {
+        "idx": 9141,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 9168,
+        "answer": [
+            "D. 3 - 1 - 2"
+        ]
+    },
+    {
+        "idx": 9600,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 9601,
+        "answer": [
+            "D. Transparent"
+        ]
+    },
+    {
+        "idx": 9672,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 9673,
+        "answer": [
+            "A. Three"
+        ]
+    },
+    {
+        "idx": 9679,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 9709,
+        "answer": [
+            "C."
+        ]
+    },
+    {
+        "idx": 9714,
+        "answer": [
+            "D."
+        ]
+    },
+    {
+        "idx": 9715,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 9729,
+        "answer": [
+            "B. The liquid column rises"
+        ]
+    },
+    {
+        "idx": 9730,
+        "answer": [
+            "B."
+        ]
+    },
+    {
+        "idx": 9757,
+        "answer": [
+            "D. Remains stationary"
+        ]
+    }
+]
