@@ -1,6 +1,6 @@
 import os
 import argparse
-from qwen2_vl_icl import load_model, qwen2_original_generate
+from run_qwen2 import load_model, qwen2_original_generate
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

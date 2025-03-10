@@ -1,1 +1,1 @@
-python3 dataset_utils/physbench_utils.py
+CUDA_VISIBLE_DEVICES=3 python3 run_qwen2.py

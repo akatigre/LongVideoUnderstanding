@@ -165,6 +165,7 @@ def filter_topk(dataset_path, curr_file, dataset, topk):
             else:
                 img = Image.open(visual_path).convert("RGB")
                 images.append(img)
+
         content = physbench_content(prompt, images, frames, answer) 
         contents.append(content)
     return contents
@@ -179,21 +180,22 @@ def physbench_content(prompt, images, frames, answer=None, img_hw=(280, 280)):
     img_idx = 0
     content = []
     video_idx = prompt.find("<video>")
-    if video_idx > 0 and frames is not None: # if <video> is present in the question
+    if video_idx > -1 and frames is not None: # if <video> is present in the question
         content.append(
             {
                 "type": "text",
                 "text": prompt[:video_idx]
             }
         ) # question in text
-        content.append(
-            {
-                "type": "video",
-                "video": frames,
-                "resized_height": img_hw[0], 
-                "resized_width": img_hw[1]
-            }
-        ) # question in video
+        for frame in frames:
+            content.append(
+                {
+                    "type": "image",
+                    "image": frame,
+                    "resized_height": img_hw[0], 
+                    "resized_width": img_hw[1]
+                }
+            ) # question in video
         end_idx = video_idx + len("<video>")
     while True: # find all images in the prompt e.g.) A. <image> B. <image> C. <image> D. <image>
         start_idx = prompt.find(substr, end_idx)

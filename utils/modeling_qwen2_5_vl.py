@@ -1402,6 +1402,7 @@ class Qwen2_5_VLModel(Qwen2_5_VLPreTrainedModel):
                         " this may lead to unexpected behaviour for Flash Attention version of Qwen2_5_VL. Make sure to "
                         " call `tokenizer.padding_side  = 'left'` before tokenizing the input. "
                     )
+                    
             if attention_mask is not None and 0.0 in attention_mask:
                 return attention_mask
             return None
