@@ -1,3 +1,6 @@
+"""
+https://github.com/USC-GVL/PhysBench/tree/main/eval
+"""
 import os
 import json
 import torch
@@ -243,7 +246,7 @@ def physbench_content(prompt, images, frames, answer=None, img_hw=(280, 280)):
                 [
                     {
                         "type": "text",
-                        "text": f"The answer is option {answer}, which is the following image\n"
+                        "text": f"\n {answer}, which is the following image\n"
                     },
                     {
                         "type": "image",
@@ -257,7 +260,7 @@ def physbench_content(prompt, images, frames, answer=None, img_hw=(280, 280)):
             content.append(
                 {
                     "type": "text",
-                    "text": f"The answer is {selected_option}"
+                    "text": f"\n {selected_option}"
                 }
             )
     return content
